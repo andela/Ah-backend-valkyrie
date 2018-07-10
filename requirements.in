@@ -1,0 +1,37 @@
+astroid
+autopep8
+certifi
+chardet
+coverage
+coveralls
+dj-database-url
+Django
+django-cors-middleware
+django-extensions
+django-nose
+djangorestframework
+docopt
+gunicorn
+idna
+isort
+lazy-object-proxy
+mccabe
+nose
+psycopg2
+psycopg2-binary
+pycodestyle
+PyJWT
+pylint
+python-decouple
+pytz
+requests
+six
+typed-ast
+urllib3
+whitenoise
+wrapt
+Pillow
+<<<<<<< HEAD
+python-twitter
+=======
+>>>>>>> adff6b0... feat(articles): auto create slugs and upload images
