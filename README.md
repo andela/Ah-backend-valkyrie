@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/andela/ah-backend-valkyrie.svg?branch=develop)](https://travis-ci.org/andela/ah-backend-valkyrie) [![Coverage Status](https://coveralls.io/repos/github/andela/ah-backend-valkyrie/badge.svg)](https://coveralls.io/github/andela/ah-backend-valkyrie)
+
 Authors Haven - A Social platform for the creative at heart.
 =======
 
@@ -153,7 +155,7 @@ If a request fails any validations, expect errors in the following format:
 }
 ```
 ### Other status codes:
-401 for Unauthorized requests, when a request requires authentication but it isn't provided
+401 for Unauthorized requests, when a request requires authentication but it isn't provided.
 
 403 for Forbidden requests, when a request may be valid but the user doesn't have permissions to perform the action
 
@@ -390,7 +392,6 @@ No additional parameters required
 ### Get Tags
 
 `GET /api/tags`
-
 
 
 
