@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/andela/ah-backend-valkyrie/badge.svg)](https://coveralls.io/github/andela/ah-backend-valkyrie)
+[![Build Status](https://travis-ci.org/andela/ah-backend-valkyrie.svg?branch=develop)](https://travis-ci.org/andela/ah-backend-valkyrie) [![Coverage Status](https://coveralls.io/repos/github/andela/ah-backend-valkyrie/badge.svg)](https://coveralls.io/github/andela/ah-backend-valkyrie)
 
 Authors Haven - A Social platform for the creative at heart.
 =======
