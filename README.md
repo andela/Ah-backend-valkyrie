@@ -155,7 +155,7 @@ If a request fails any validations, expect errors in the following format:
 }
 ```
 ### Other status codes:
-401 for Unauthorized requests, when a request requires authentication but it isn't provided
+401 for Unauthorized requests, when a request requires authentication but it isn't provided.
 
 403 for Forbidden requests, when a request may be valid but the user doesn't have permissions to perform the action
 
@@ -392,7 +392,6 @@ No additional parameters required
 ### Get Tags
 
 `GET /api/tags`
-
 
 
 
