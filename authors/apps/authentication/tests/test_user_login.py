@@ -30,9 +30,10 @@ class TestUserRegistration(BaseTestMethods):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
-            response.data, {'email': self.user['user']['email'],
-                            'username': self.user['user']['username']
-                            }
+            response.data, {
+                'email': self.user['user']['email'], 
+                'username': self.user['user']['username']
+                }
             )
         self.assertIsInstance(response.data, dict)
 
@@ -53,9 +54,11 @@ class TestUserRegistration(BaseTestMethods):
         self.register_user()
 
         url = reverse('user-login')
-        data = {
-            'user': 
-    {'email': 'invalid@test.com', 'password': self.user['user']['password']}}
+        data = {'user': {
+            'email': 'invalid@test.com', 
+            'password': self.user['user']['password']
+            }
+        }
         response = self.client.post(url, data=data, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -74,7 +77,10 @@ class TestUserRegistration(BaseTestMethods):
         response = self.client.post(url, data=data, format='json')
        
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('This field is required.', response.data['errors']['email'][0])
+        self.assertIn(
+            'This field is required.', 
+            response.data['errors']['email'][0]
+            )
 
     def test_login_without_a_password(self):
         self.register_user()
@@ -84,18 +90,7 @@ class TestUserRegistration(BaseTestMethods):
         response = self.client.post(url, data=data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('This field is required.', response.data['errors']['password'][0])
-
-
-    
-
-
-    
-
-
-    
-
-
-        
-
-
+        self.assertIn(
+            'This field is required.', 
+            response.data['errors']['password'][0]
+            )

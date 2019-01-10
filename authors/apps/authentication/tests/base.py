@@ -40,5 +40,3 @@ class BaseTestMethods(APITestCase):
         response = self.client.post(url, data=data, format='json')
 
         return response
-
-
