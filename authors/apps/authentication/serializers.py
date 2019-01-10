@@ -3,7 +3,20 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from .models import User
+import re
 
+class CustomeValidator:
+    def password_strength(value):
+        """
+        Test if password contains numbers and letters else raise serializer
+        Validation error
+        """
+        if (re.compile(r'^(?=.*[A-Za-z0-9])(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]').search(value['password'])) is None:
+            raise serializers.ValidationError(
+                {
+                    'password': "Password must contain a number, letters and a special character." 
+                }
+            )
 
 class RegistrationSerializer(serializers.ModelSerializer):
     """Serializers registration requests and creates a new user."""
@@ -24,6 +37,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         # List all of the fields that could possibly be included in a request
         # or response, including fields specified explicitly above.
         fields = ['email', 'username', 'password']
+        validators = [CustomeValidator.password_strength]
 
     def create(self, validated_data):
         # Use the `create_user` method we wrote earlier to create a new user.
