@@ -19,7 +19,11 @@ from django.contrib import admin
 urlpatterns = [
     path('admin/', admin.site.urls),
 
+<<<<<<< HEAD
     path('api/v1/', include(('authors.apps.authentication.urls',
                            'authentication'), namespace='authentication')),
+=======
+    path('api/v1/', include('authors.apps.authentication.urls')),
+>>>>>>> 944998530d7a1b73674f4974235c561f3d29e11a
 ]
 
