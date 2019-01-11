@@ -1,10 +1,24 @@
 language: python
+
+services:
+  - postgresql
+  
 # python version
 python:
   - "3.6.0"
 # command to install dependencies
 install:
   - pip install -r requirements.txt 
+
+addons:
+  postgresql: "10"
+
+postgres:
+  adapter: postgresql
+  database: travis_ci_test
+  username: postgres
+  password: pgadmin
+
 # command to run tests
 script: 
   - python manage.py test
