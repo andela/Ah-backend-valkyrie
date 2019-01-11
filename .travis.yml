@@ -10,14 +10,8 @@ python:
 install:
   - pip install -r requirements.txt 
 
-addons:
-  postgresql: "10"
-
-postgres:
-  adapter: postgresql
-  database: travis_ci_test
-  username: postgres
-  password: pgadmin
+before_script:
+  - psql -c 'create database test_db;' -U postgres
 
 # command to run tests
 script: 
