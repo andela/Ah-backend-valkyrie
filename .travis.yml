@@ -1,15 +1,19 @@
 language: python
+
 # python version
 python:
   - "3.6.0"
+
 # command to install dependencies
 install:
-  - pip install -r requirements.txt 
+  - pip install -r requirements.txt
+  - export SECRET_KEY="this-is-hard-to-break"
+
 # command to run tests
-script: 
+script:
   - python manage.py test
   - coverage
   - coveralls
- 
+
 after_success:
-  - coveralls  
+  - coveralls
