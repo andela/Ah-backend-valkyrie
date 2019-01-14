@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .renderers import UserJSONRenderer
+from .backends import JWTAuthentication
 from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer
 )
@@ -72,4 +73,3 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-

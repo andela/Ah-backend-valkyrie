@@ -1,15 +1,59 @@
-# import jwt
-#
-# from django.conf import settings
-#
-from rest_framework import authentication, exceptions
-#
-# from .models import User
+from datetime import datetime
+from django.conf import settings
+
+from rest_framework import authentication, exceptions, status
+from .models import User
+from .jwt_helper import JWTHelper
 
 """Configure JWT Here"""
+
+
 class JWTAuthentication(authentication.BaseAuthentication):
-  """Default authentication class to be used in the views"""
+    """Default authentication class to be used in the views"""
+    jwt_helper_class = JWTHelper()
 
-  def authenticate(self, request):
-    return (None, '')
+    def authenticate(self, request):
+        auth_header = authentication.get_authorization_header(request).split()
 
+        if not auth_header:
+            #  Authentication was not attempted
+            return None
+
+        if len(auth_header) != 2:
+            #  Authentication attempted but failed
+            msg = 'Invalid token'
+            raise exceptions.AuthenticationFailed(
+                msg, status.HTTP_403_FORBIDDEN
+            )
+        prefix = auth_header[0].decode()
+        token = auth_header[1].decode()
+
+        if prefix != 'Bearer':
+            #  Authentication attempted but failed
+            msg = 'Token should be a Bearer token'
+            raise exceptions.AuthenticationFailed(
+                msg, status.HTTP_403_FORBIDDEN
+            )
+        return self._get_user_data(token)
+
+    def _get_user_data(self, token):
+        user_data = self.jwt_helper_class.decode_token(token)
+
+        try:
+            user = User.objects.get(
+                pk=user_data.get('id'),
+                username=user_data.get('username'),
+                email=user_data.get('email')
+            )
+        except:
+            msg = 'User not found'
+            raise exceptions.NotFound(
+                msg, status.HTTP_404_NOT_FOUND
+            )
+
+        if not user.is_active:
+            msg = 'This user has been deactivated'
+            raise exceptions.NotAcceptable(
+                detail=msg, code=status.HTTP_406_NOT_ACCEPTABLE
+            )
+        return (user, token)
