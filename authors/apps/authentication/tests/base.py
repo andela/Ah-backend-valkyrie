@@ -12,7 +12,7 @@ class BaseTestMethods(APITestCase):
                 'password':'TestUser12#'
             }
         }
-
+        
     def create_user(self, data):
         """
         Method for creating a new user.
