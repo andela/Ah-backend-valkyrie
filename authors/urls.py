@@ -20,5 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('api/v1/', include('authors.apps.authentication.urls')),
+    path('api/v1/articles/', include('authors.apps.articles.urls'))
 ]
 
