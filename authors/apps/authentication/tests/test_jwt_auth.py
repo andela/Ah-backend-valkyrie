@@ -122,7 +122,7 @@ class TestJWTAuthentication(BaseTestMethods):
         )
         self.client.credentials(HTTP_AUTHORIZATION=self.non_registered_token)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
             'User not found',
             response.data.get('detail')

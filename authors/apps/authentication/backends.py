@@ -43,8 +43,8 @@ class JWTAuthentication(authentication.BaseAuthentication):
             user = User.objects.get(pk=user_data.get('id'))
         except:
             msg = 'User not found'
-            raise exceptions.NotFound(
-                msg, status.HTTP_404_NOT_FOUND
+            raise exceptions.AuthenticationFailed(
+                msg, status.HTTP_403_FORBIDDEN
             )
         if user.username != user_data.get('username'):
             msg = 'User not found'
