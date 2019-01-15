@@ -34,18 +34,25 @@ class JWTAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed(
                 msg, status.HTTP_403_FORBIDDEN
             )
-        return self._get_user_data(token)
+        return self._get_user_data(request, token)
 
-    def _get_user_data(self, token):
+    def _get_user_data(self, request, token):
         user_data = self.jwt_helper_class.decode_token(token)
 
         try:
-            user = User.objects.get(
-                pk=user_data.get('id'),
-                username=user_data.get('username'),
-                email=user_data.get('email')
-            )
+            user = User.objects.get(pk=user_data.get('id'))
         except:
+            msg = 'User not found'
+            raise exceptions.NotFound(
+                msg, status.HTTP_404_NOT_FOUND
+            )
+        if user.username != user_data.get('username'):
+            msg = 'User not found'
+            raise exceptions.NotFound(
+                msg, status.HTTP_404_NOT_FOUND
+            )
+
+        if user.email != user_data.get('email'):
             msg = 'User not found'
             raise exceptions.NotFound(
                 msg, status.HTTP_404_NOT_FOUND
