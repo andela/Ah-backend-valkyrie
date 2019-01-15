@@ -47,8 +47,8 @@ pylint==2.2.2
 python-decouple==3.1
 python-twitter==3.5
 python3-openid==3.1.0     # via social-auth-core
-pytz==2018.7
 requests-oauthlib==1.0.0  # via google-auth-oauthlib, python-twitter, social-auth-core
+pytz==2018.9
 requests==2.21.0
 rsa==4.0                  # via google-auth
 six==1.12.0
@@ -57,4 +57,4 @@ social-auth-core==3.0.0   # via social-auth-app-django
 typed-ast==1.2.0
 urllib3==1.24.1
 whitenoise==4.1.2
-wrapt==1.10.11
+wrapt==1.11.0
