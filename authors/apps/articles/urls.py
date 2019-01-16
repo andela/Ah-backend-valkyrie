@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import ListCreateArticle, ListCreateTag, RetrieveUpdateDestroyArticle
+from .views import (ListCreateArticle, ListCreateTag,
+                    RetrieveUpdateDestroyArticle)
 
 app_name = "articles"
 urlpatterns = [
