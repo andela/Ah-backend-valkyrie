@@ -21,7 +21,7 @@ urlpatterns = [
     path('api/v1/', include('authors.apps.authentication.urls')),
     path('api/v1/', include((
         'authors.apps.authentication.social_auth.urls', 'authentication'
-        ), namespace='authentication')),
+    ), namespace='authentication')),
 
 ]
 

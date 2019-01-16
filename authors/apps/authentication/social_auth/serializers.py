@@ -15,7 +15,7 @@ class FacebookSerializer(serializers.Serializer):
         # try:
         user_info = my_facebook.verify(
             provider="facebook", token=access_token
-            )
+        )
         try:
             user_info['id']
         except:
@@ -31,7 +31,7 @@ class FacebookSerializer(serializers.Serializer):
         }
         return register_user(
              email=email, name=name, **my_kwargs
-            )
+        )
 
 
 class GoogleSerializer(serializers.Serializer):
@@ -56,5 +56,5 @@ class GoogleSerializer(serializers.Serializer):
         }
         return register_user(
             email=email, name=name, **my_kwargs
-            )
+        )
 

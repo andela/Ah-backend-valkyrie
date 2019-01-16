@@ -91,14 +91,6 @@ DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL')
     )
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'authors_db',
-    #     'USER': 'araalifarooq',
-    #     'PASSWORD': 'araali',
-    #     'HOST': '127.0.0.1',
-    #     'PORT': '5432',
-    # }
 }
 
 # Password validation
