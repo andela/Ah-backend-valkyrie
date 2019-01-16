@@ -7,6 +7,8 @@ from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin
 )
 from django.db import models
+from .jwt_helper import JWTHelper
+
 
 class UserManager(BaseUserManager):
     """
@@ -33,24 +35,26 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, username, email, password):
-      """
-      Create and return a `User` with superuser powers.
+        """
+        Create and return a `User` with superuser powers.
 
-      Superuser powers means that this use is an admin that can do anything
-      they want.
-      """
-      if password is None:
-          raise TypeError('Superusers must have a password.')
+        Superuser powers means that this use is an admin that can do anything
+        they want.
+        """
+        if password is None:
+            raise TypeError('Superusers must have a password.')
 
-      user = self.create_user(username, email, password)
-      user.is_superuser = True
-      user.is_staff = True
-      user.save()
+        user = self.create_user(username, email, password)
+        user.is_superuser = True
+        user.is_staff = True
+        user.save()
 
-      return user
+        return user
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    jwt_helper_class = JWTHelper()
+
     # Each `User` needs a human-readable unique identifier that we can use to
     # represent the `User` in the UI. We want to index this column in the
     # database to improve lookup performance.
@@ -102,12 +106,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def get_full_name(self):
-      """
-      This method is required by Django for things like handling emails.
-      Typically, this would be the user's first and last name. Since we do
-      not store the user's real name, we return their username instead.
-      """
-      return self.username
+        """
+        This method is required by Django for things like handling emails.
+        Typically, this would be the user's first and last name. Since we do
+        not store the user's real name, we return their username instead.
+        """
+        return self.username
 
     def get_short_name(self):
         """
@@ -117,4 +121,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         return self.username
 
-
+    @property
+    def token(self):
+        """Allows use this method as an attribute of the User"""
+        payload = {
+            'id': self.pk,
+            'email': self.email,
+            'username': self.username,
+            'exp': datetime.utcnow() + timedelta(days=1),
+            'iat': datetime.utcnow()
+        }
+        return self.jwt_helper_class.generate_token(payload)
