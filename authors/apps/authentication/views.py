@@ -9,15 +9,12 @@ from .backends import JWTAuthentication
 from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer
 )
-<<<<<<< HEAD
 from authors.apps.core.email_handler import email_template
 from django.contrib.sites.shortcuts import get_current_site
-from django.contrib.auth.tokens  import default_token_generator
+from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.urls import reverse
-=======
->>>>>>> 7b30893... Feature(User Profile): Create a User Profile
 from .models import User
 
 
@@ -41,7 +38,7 @@ class RegistrationAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def send_verification_email(self, user, request):
-        #Send verification Email to registered user
+        # Send verification Email to registered user
         token = default_token_generator.make_token(user)
         encoded_email = urlsafe_base64_encode(
             force_bytes(user.email)
@@ -59,7 +56,7 @@ class RegistrationAPIView(APIView):
         <p>Thank you for registering with Authors Haven. \
         Please follow the link below to activate your account.</p> \
         <br> {}'.format((user.username).capitalize(), url)
-        
+
         return email_template(subject, content, user.email)
 
 
@@ -85,7 +82,7 @@ class UserAccountVerificationAPIView(APIView):
                 )
             else:
                 return Response(
-                    data={'message': 'Invalid Token used.'}, 
+                    data={'message': 'Invalid Token used.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
         except Exception as ex:
