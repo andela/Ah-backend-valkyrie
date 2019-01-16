@@ -12,7 +12,15 @@ class BaseTestMethods(APITestCase):
                 'password':'TestUser12#'
             }
         }
-
+        
+    def create_user(self, data):
+        """
+        Method for creating a new user.
+        """
+        url = reverse('user-registration')
+        response = self.client.post(url, data=data, format="json")
+        return response
+        
     # User registration and login helper methods
     def register_user(self):
         url = reverse('user-registration')
