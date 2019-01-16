@@ -34,7 +34,7 @@ class TestUserProfile(BaseTestMethods):
         )
 
     def test_update_profile(self):
-        self.register_user()
+        user = User.objects.create_user(**self.user.get('user'))
         data = {
             "user": {
                 "bio": "I love music",
@@ -43,7 +43,8 @@ class TestUserProfile(BaseTestMethods):
         }
 
         response = self.client.put(
-            '/api/v1/users/2/', data=data, format='json')
+            '/api/v1/users/{}/'.format(user.id), data=data, format='json')
         print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        #self.assertEqual(json.loads(response.content)['user']['bio'], "I love music")
+        self.assertEqual(json.loads(response.content)[
+                         'user']['bio'], "I love music")
