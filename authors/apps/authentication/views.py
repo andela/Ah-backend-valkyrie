@@ -9,12 +9,15 @@ from .backends import JWTAuthentication
 from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer
 )
+<<<<<<< HEAD
 from authors.apps.core.email_handler import email_template
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.tokens  import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.urls import reverse
+=======
+>>>>>>> 7b30893... Feature(User Profile): Create a User Profile
 from .models import User
 
 
@@ -112,7 +115,7 @@ class LoginAPIView(APIView):
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
 
@@ -125,12 +128,26 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
-        serializer_data = request.data.get('user', {})
+        user_data = request.data.get('user', {})
+        user = User.objects.get(id=kwargs.get('pk'))
+        serializer_data = {
+            'username': user_data.get('username', user.username),
+            'email': user_data.get('email', user.email),
+
+            'profile': {
+                'first_name': user_data.get('first_name', user.profile.first_name),
+                'last_name': user_data.get('last_name', user.profile.last_name),
+                'date_of_birth': user_data.get('date_of_birth', user.profile.date_of_birth),
+                'country': user_data.get('country', user.profile.country),
+                'bio': user_data.get('bio', user.profile.bio),
+                'image': user_data.get('image', user.profile.image)
+            }
+        }
 
         # Here is that serialize, validate, save pattern we talked about
         # before.
         serializer = self.serializer_class(
-            request.user, data=serializer_data, partial=True
+            user, data=serializer_data, partial=True
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()

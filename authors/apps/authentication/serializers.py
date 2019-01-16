@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from .models import User
+<<<<<<< HEAD
 import re
 
 class CustomValidator:
@@ -22,6 +23,10 @@ class CustomValidator:
                     'letters and special characters.'
                 }
             )
+=======
+from authors.apps.profiles.serializers import ProfileSerializer
+
+>>>>>>> 7b30893... Feature(User Profile): Create a User Profile
 
 class RegistrationSerializer(serializers.ModelSerializer):
     """Serializers registration requests and creates a new user."""
@@ -123,10 +128,22 @@ class UserSerializer(serializers.ModelSerializer):
         min_length=8,
         write_only=True
     )
+    profile = ProfileSerializer(write_only=True)
+    first_name = serializers.CharField(source='profile.first_name', read_only=True)
+    last_name = serializers.CharField(source='profile.last_name', read_only=True)
+    date_of_birth = serializers.CharField(source='profile.date_of_birth', read_only=True)
+    country = serializers.CharField(source='profile.country', read_only=True)
+    bio = serializers.CharField(source='profile.bio', read_only=True)
+    image = serializers.CharField(source='profile.image', read_only=True)
 
     class Meta:
         model = User
+<<<<<<< HEAD
         fields = ('email', 'username', 'password', 'is_active')
+=======
+        fields = ('email', 'username', 'password', 'profile', 'first_name',
+         'last_name', 'date_of_birth', 'country', 'bio', 'image')
+>>>>>>> 7b30893... Feature(User Profile): Create a User Profile
 
         # The `read_only_fields` option is an alternative for explicitly
         # specifying the field with `read_only=True` like we did for password
@@ -146,6 +163,8 @@ class UserSerializer(serializers.ModelSerializer):
         # `validated_data` dictionary before iterating over it.
         password = validated_data.pop('password', None)
 
+        profile_data = validated_data.pop('profile', {})
+
         for (key, value) in validated_data.items():
             # For the keys remaining in `validated_data`, we will set them on
             # the current `User` instance one at a time.
@@ -160,5 +179,10 @@ class UserSerializer(serializers.ModelSerializer):
         # the model. It's worth pointing out that `.set_password()` does not
         # save the model.
         instance.save()
+
+        for (key, value) in profile_data.items():
+            setattr(instance.profile, key, value)
+
+        instance.profile.save()
 
         return instance
