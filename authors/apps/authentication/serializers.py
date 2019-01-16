@@ -6,6 +6,7 @@ from rest_framework import serializers
 
 from .models import User
 from authors.apps.profiles.serializers import ProfileSerializer
+import re
 
 
 class CustomValidator:
