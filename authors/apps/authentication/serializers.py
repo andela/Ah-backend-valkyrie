@@ -1,10 +1,12 @@
+import re
+from authors.apps.profiles.serializers import ProfileSerializer
 from django.contrib.auth import authenticate
 
 from rest_framework import serializers
 
 from .models import User
-<<<<<<< HEAD
-import re
+from authors.apps.profiles.serializers import ProfileSerializer
+
 
 class CustomValidator:
     def password_strength(value):
@@ -19,14 +21,11 @@ class CustomValidator:
         ) is None:
             raise serializers.ValidationError(
                 {
-                    'password':'Password must have numbers, ' + 
+                    'password': 'Password must have numbers, ' +
                     'letters and special characters.'
                 }
             )
-=======
-from authors.apps.profiles.serializers import ProfileSerializer
 
->>>>>>> 7b30893... Feature(User Profile): Create a User Profile
 
 class RegistrationSerializer(serializers.ModelSerializer):
     """Serializers registration requests and creates a new user."""
@@ -129,21 +128,20 @@ class UserSerializer(serializers.ModelSerializer):
         write_only=True
     )
     profile = ProfileSerializer(write_only=True)
-    first_name = serializers.CharField(source='profile.first_name', read_only=True)
-    last_name = serializers.CharField(source='profile.last_name', read_only=True)
-    date_of_birth = serializers.CharField(source='profile.date_of_birth', read_only=True)
+    first_name = serializers.CharField(
+        source='profile.first_name', read_only=True)
+    last_name = serializers.CharField(
+        source='profile.last_name', read_only=True)
+    date_of_birth = serializers.CharField(
+        source='profile.date_of_birth', read_only=True)
     country = serializers.CharField(source='profile.country', read_only=True)
     bio = serializers.CharField(source='profile.bio', read_only=True)
     image = serializers.CharField(source='profile.image', read_only=True)
 
     class Meta:
         model = User
-<<<<<<< HEAD
-        fields = ('email', 'username', 'password', 'is_active')
-=======
         fields = ('email', 'username', 'password', 'profile', 'first_name',
-         'last_name', 'date_of_birth', 'country', 'bio', 'image')
->>>>>>> 7b30893... Feature(User Profile): Create a User Profile
+                  'last_name', 'date_of_birth', 'country', 'bio', 'image')
 
         # The `read_only_fields` option is an alternative for explicitly
         # specifying the field with `read_only=True` like we did for password
