@@ -23,6 +23,10 @@ class Migration(migrations.Migration):
                 ('username', models.CharField(db_index=True, max_length=255, unique=True)),
                 ('email', models.EmailField(db_index=True, max_length=254, unique=True)),
                 ('is_active', models.BooleanField(default=True)),
+                ('facebook_id', models.CharField(max_length=255)),
+                ('google_id', models.CharField(max_length=255)),
+                ('twitter_id', models.CharField(max_length=255)),
+                ('is_verified', models.BooleanField(default=False)),
                 ('is_staff', models.BooleanField(default=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
@@ -30,7 +34,9 @@ class Migration(migrations.Migration):
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')),
             ],
             options={
+                'db_table': 'auth_user',
                 'abstract': False,
+                'managed': True,
             },
         ),
     ]

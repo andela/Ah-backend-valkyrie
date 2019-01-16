@@ -41,7 +41,7 @@ class TestUserRegistration(BaseTestMethods):
         self.assertEqual(
             response.data.get('email'), self.user['user']['email']
         )
-
+        
     def test_login_with_un_matching_email(self):
 
         self.register_user()

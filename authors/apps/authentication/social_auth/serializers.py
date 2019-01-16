@@ -46,7 +46,7 @@ class GoogleSerializer(serializers.Serializer):
             user_info['sub']
         except:
             raise serializers.ValidationError(
-                'The token is invalid or expired. Please login again.'
+                'Invalid or expired token. Please login again.'
             )
         user_id = user_info['sub']
         email = user_info['email']
