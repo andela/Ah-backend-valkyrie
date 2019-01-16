@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+from authors.apps.authentication.models import User
 
 class Tag(models.Model):
     name = models.CharField(max_length=50)
@@ -12,11 +14,19 @@ class Article(models.Model):
     description = models.CharField(max_length=300)
     body = models.TextField()
     tagList = models.ManyToManyField(Tag)
-    createdAt = models.DateTimeField(auto_now=True)
+    createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     favorited = models.BooleanField()
     favoritesCount = models.PositiveIntegerField()
-    author = models.IntegerField()
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE, null=False
+    )
+    # author = models.ForeignKey(User, on_delete=models.CASCADE)
+    # author = models.PositiveIntegerField()
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        ordering = ('createdAt',)

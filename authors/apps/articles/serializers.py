@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from authors.apps.authentication.serializers import UserSerializer
 from .models import Tag, Article
 
 class TagSerializer(serializers.ModelSerializer):
@@ -10,6 +11,11 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
 
 class ArticleSerializer(serializers.ModelSerializer):
+    # author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    # author = UserSerializer()
+    # author_id = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
+    # author_id = serializers.IntegerField()
+
     class Meta:
         fields = (
             'slug',
@@ -21,6 +27,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             'updatedAt',
             'favorited',
             'favoritesCount',
-            'author'
+            'author',
         )
         model = Article
+        read_only_fields = ('author',)
