@@ -111,8 +111,8 @@ class TestJWTAuthentication(BaseTestMethods):
 
     def test_token_does_not_belong_to_registered_user(self):
         """
-        Tests that the token bearer does not belong to any
-        registered user id
+        Tests that the person in possession of this token is
+        not a registered user
         """
 
         self.register_user()
@@ -123,8 +123,10 @@ class TestJWTAuthentication(BaseTestMethods):
         self.client.credentials(HTTP_AUTHORIZATION=self.non_registered_token)
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual('User not found',
-                         response.data.get('detail'))
+        self.assertEqual(
+            'User not found',
+            response.data.get('detail')
+        )
 
     def test_user_account_is_deactivated(self):
         """
