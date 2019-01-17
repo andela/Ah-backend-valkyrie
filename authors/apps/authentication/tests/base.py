@@ -13,6 +13,11 @@ class BaseTestMethods(APITestCase):
                 'username': 'testuser',
                 'email': 'testuser@andela.com',
                 'password': 'TestUser12#'
+            },
+            'user2': {
+                'username': 'testuser2',
+                'email': 'testuser2@andela.com',
+                'password': 'TestUser123#'
             }
         }
         self.jwt_helper_class = JWTHelper()
@@ -28,6 +33,7 @@ class BaseTestMethods(APITestCase):
             "tagList":[1]
         }
         self.get_post_article_url = "articles:articles_list"
+        self.single_article_url = "articles:article_detail"
         
     def create_user(self, data):
         """
