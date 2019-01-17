@@ -15,7 +15,7 @@ class Article(models.Model):
     slug = models.SlugField(null=True)
     description = models.CharField(max_length=300)
     body = models.TextField()
-    tagList = models.ManyToManyField(Tag)
+    # tagList = models.ManyToManyField(Tag)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(

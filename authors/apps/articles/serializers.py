@@ -23,7 +23,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'body',
-            'tagList',
+            # 'tagList',
             'createdAt',
             'updatedAt',
             'author',

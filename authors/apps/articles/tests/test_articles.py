@@ -1,11 +1,20 @@
 from django.test import TestCase
 
-from articles.models import Article, Tag
+from  rest_framework.reverse import reverse
 
-class ArticleTestCase(TestCase):
+from authors.apps.authentication.tests.base import BaseTestMethods
+from authors.apps.articles.models import Article, Tag
+from authors.apps.authentication.models import User
 
-    def setUp(self):
-        pass
+class ArticleTestCase(BaseTestMethods):
+
+    def test_get_article(self):
+        user = User.objects.create_user(**self.user.get('user'))
+        url = reverse('articles:articles_list')
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + user.token)
+        self.client.post(url, data=self.article, format='json')
+        response = self.client.get(url)
+        self.assertGreater(len(response.data), 0)
 
     def test_user_creates_article(self):
         pass
