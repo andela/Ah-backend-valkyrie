@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+from django.db import models
 
 from authors.apps.authentication.serializers import UserSerializer
 from .models import Tag, Article
@@ -14,8 +16,7 @@ class ArticleSerializer(serializers.ModelSerializer):
     author = serializers.PrimaryKeyRelatedField(
         read_only=True, default=serializers.CurrentUserDefault()
     )
-    
-  
+
     class Meta:
         fields = (
             'slug',
@@ -25,8 +26,6 @@ class ArticleSerializer(serializers.ModelSerializer):
             'tagList',
             'createdAt',
             'updatedAt',
-            'favorited',
-            'favoritesCount',
             'author',
         )
         model = Article

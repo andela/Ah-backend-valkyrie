@@ -23,6 +23,11 @@ class RetrieveUpdateDestroyArticle(generics.RetrieveUpdateDestroyAPIView):
         authority.IsOwnerOrReadOnly,
     )
 
+class RetrieveArticleWithSlug(generics.RetrieveAPIView):
+    queryset = models.Article.objects.all()
+    serializer_class = serializers.ArticleSerializer
+    lookup_field = 'slug'
+
 
 class ListCreateTag(generics.ListCreateAPIView):
     queryset = models.Tag.objects.all()

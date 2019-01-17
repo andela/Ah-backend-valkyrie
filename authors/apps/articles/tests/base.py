@@ -1,0 +1,1 @@
+from authors.apps.authentication.tests import base
