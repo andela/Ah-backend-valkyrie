@@ -27,6 +27,7 @@ class BaseTestMethods(APITestCase):
             "body":"This is a lorem ipsum section.",
             "tagList":[1]
         }
+        self.get_post_article_url = "articles:articles_list"
         
     def create_user(self, data):
         """
