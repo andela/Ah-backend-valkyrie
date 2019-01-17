@@ -1,9 +1,11 @@
-from datetime import datetime
-from django.conf import settings
+import datetime
+import jwt
 
-from rest_framework import authentication, exceptions, status
-from .models import User
 from .jwt_helper import JWTHelper
+from .models import User
+from django.conf import settings
+from rest_framework import authentication, exceptions, status
+
 
 """Configure JWT Here"""
 
@@ -64,3 +66,17 @@ class JWTAuthentication(authentication.BaseAuthentication):
                 detail=msg, code=status.HTTP_406_NOT_ACCEPTABLE
             )
         return (user, token)
+
+    # User password reset token generator
+    @classmethod
+    def generate_password_reset_token(cls, email):
+        token = jwt.encode({
+            'email': email,
+            'iat': datetime.datetime.utcnow(),
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=700)
+        },
+            settings.SECRET_KEY,
+            algorithm='HS256'
+        ).decode()
+
+        return token

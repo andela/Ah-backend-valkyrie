@@ -7,6 +7,7 @@ from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin
 )
 from django.db import models
+from django.shortcuts import get_object_or_404
 from .jwt_helper import JWTHelper
 
 
@@ -47,6 +48,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(username, email, password)
         user.is_superuser = True
         user.is_staff = True
+        user.is_active = True
         user.save()
 
         return user
@@ -72,7 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # will simply offer users a way to deactivate their account instead of
     # letting them delete it. That way they won't show up on the site anymore,
     # but we can still analyze the data.
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
 
     # The `is_staff` flag is expected by Django to determine who can and cannot
     # log into the Django admin site. For most users, this flag will always be
@@ -132,3 +134,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             'iat': datetime.utcnow()
         }
         return self.jwt_helper_class.generate_token(payload)
+
+    @classmethod
+    def fetch_user(cls, email):
+        return get_object_or_404(cls, email=email)
