@@ -20,7 +20,15 @@ class BaseTestMethods(APITestCase):
         self.non_bearer_token = test_data.get('non_bearer_token')
         self.invalid_token = test_data.get('invalid_token')
         self.non_registered_token = test_data.get('non_registered_token')
-
+        
+    def create_user(self, data):
+        """
+        Method for creating a new user.
+        """
+        url = reverse('user-registration')
+        response = self.client.post(url, data=data, format="json")
+        return response
+        
     # User registration and login helper methods
     def register_user(self):
         url = reverse('user-registration')
