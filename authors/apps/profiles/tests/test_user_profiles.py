@@ -48,3 +48,28 @@ class TestUserProfile(BaseTestMethods):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content)[
                          'user']['bio'], "I love music")
+
+    def test_update_a_non_owner_profile(self):
+        owner = User.objects.create_user(**self.user.get('user'))
+        data = {
+            "user": {
+                "bio": "I love music",
+                "image": "http://images.com/profile.jpg"
+            }
+        }
+        user_data = {
+            'user': {
+                'username': 'frank',
+                'email': 'frank@andela.com',
+                'password': 'TestUser12#'
+            }
+        }
+        non_owner = User.objects.create_user(**user_data['user'])
+        response = self.client.put(
+            '/api/v1/users/{}/'.format(non_owner.id), data=data, format='json',
+            HTTP_AUTHORIZATION=f'Bearer {owner.token}')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(
+            json.loads(response.content)['user']['detail'],
+            "You are not allowed perform this action"
+        )
