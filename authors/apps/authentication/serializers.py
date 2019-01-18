@@ -161,7 +161,6 @@ class UserSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password', None)
 
         profile_data = validated_data.pop('profile', {})
-        
 
         for (key, value) in validated_data.items():
             # For the keys remaining in `validated_data`, we will set them on
