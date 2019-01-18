@@ -41,8 +41,8 @@ class Article(models.Model):
 
 class ArticleImage(models.Model):
     property = models.ForeignKey(
-                                Article,
-                                related_name='images',
-                                on_delete=models.CASCADE
-                                )
+        Article,
+        related_name='images',
+        on_delete=models.CASCADE
+    )
     image = models.ImageField()

@@ -19,7 +19,6 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            'id',
             'slug',
             'title',
             'description',

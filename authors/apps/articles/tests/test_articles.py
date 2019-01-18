@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from  rest_framework.reverse import reverse
+from rest_framework import status
 
 from authors.apps.authentication.tests.base import BaseTestMethods
 from authors.apps.articles.models import Article, Tag
@@ -24,7 +25,7 @@ class ArticleTestCase(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + get_user_token(self
         ))
         request = self.client.post(url, data=self.article, format='json')
-        self.assertEqual(request.status_code, 201)
+        self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         self.assertEqual(request.data['title'], "Test article today")
 
     def test_create_article_without_login(self):
@@ -39,7 +40,7 @@ class ArticleTestCase(BaseTestMethods):
         )
         self.article['body'] = ''
         request = self.client.post(url, data=self.article, format='json')
-        self.assertEqual(request.status_code, 400)
+        self.assertEqual(request.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_article_with_duplicate_title(self):
         url = reverse(self.get_post_article_url)
@@ -48,7 +49,7 @@ class ArticleTestCase(BaseTestMethods):
         )
         self.client.post(url, data=self.article, format='json')
         request = self.client.post(url, data=self.article, format='json')
-        self.assertEqual(request.status_code, 201)
+        self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         self.assertEqual(request.data['slug'], "test-article-today-2")
 
     def test_update_article_by_author(self):
@@ -57,11 +58,11 @@ class ArticleTestCase(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
         )
         request = self.client.post(url, data=self.article, format='json')
-        article_id = request.data['id']
+        article_slug = request.data['slug']
         self.article['title'] = "Test article yesterday"
-        update_url = reverse(self.single_article_url, args=[article_id])
+        update_url = reverse(self.single_article_url, args=[article_slug])
         request = self.client.put(update_url, data=self.article, format='json')  
-        self.assertEqual(request.status_code, 200)
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
         self.assertEqual(request.data['title'], "Test article yesterday")
 
     def test_update_article_by_invalid_author(self):
@@ -71,7 +72,7 @@ class ArticleTestCase(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
         )
         request = self.client.post(url, data=self.article, format='json')
-        article_id = request.data['id']
+        article_slug = request.data['slug']
         
         # create second user and update first user's article
         user2 = User.objects.create_user(**self.user.get('user2'))
@@ -79,9 +80,9 @@ class ArticleTestCase(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + user2.token
         )
         self.article['title'] = "Test article yesterday"
-        update_url = reverse(self.single_article_url, args=[article_id])
+        update_url = reverse(self.single_article_url, args=[article_slug])
         request = self.client.put(update_url, data=self.article, format='json')  
-        self.assertEqual(request.status_code, 403)
+        self.assertEqual(request.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
             request.data['detail'],
             "You do not have permission to perform this action."
@@ -93,10 +94,10 @@ class ArticleTestCase(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
         )
         request = self.client.post(url, data=self.article, format='json')
-        article_id = request.data['id']
-        delete_url = reverse(self.single_article_url, args=[article_id])
+        article_slug = request.data['slug']
+        delete_url = reverse(self.single_article_url, args=[article_slug])
         request = self.client.delete(delete_url, data=self.article, format='json')  
-        self.assertEqual(request.status_code, 204)
+        self.assertEqual(request.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_article_by_invalid_author(self):
         # create article with first user
@@ -105,16 +106,16 @@ class ArticleTestCase(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
         )
         request = self.client.post(url, data=self.article, format='json')
-        article_id = request.data['id']
+        article_slug = request.data['slug']
         
         # create second user and delete first user's article
         user2 = User.objects.create_user(**self.user.get('user2'))
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + user2.token
         )
-        delete_url = reverse(self.single_article_url, args=[article_id])
+        delete_url = reverse(self.single_article_url, args=[article_slug])
         request = self.client.put(delete_url, data=self.article, format='json')  
-        self.assertEqual(request.status_code, 403)
+        self.assertEqual(request.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
             request.data['detail'],
             "You do not have permission to perform this action."

@@ -18,15 +18,11 @@ class ListCreateArticle(generics.ListCreateAPIView):
 class RetrieveUpdateDestroyArticle(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Article.objects.all()
     serializer_class = serializers.ArticleSerializer
+    lookup_field = 'slug'
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
         authority.IsOwnerOrReadOnly,
     )
-
-class RetrieveArticleWithSlug(generics.RetrieveAPIView):
-    queryset = models.Article.objects.all()
-    serializer_class = serializers.ArticleSerializer
-    lookup_field = 'slug'
 
 
 class ListCreateTag(generics.ListCreateAPIView):
