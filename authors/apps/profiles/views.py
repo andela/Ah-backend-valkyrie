@@ -14,10 +14,10 @@ class ProfileRetrieveAPIView(RetrieveAPIView):
     renderer_classes = (ProfileJSONRenderer,)
     permission_classes = (AllowAny,)
 
-    def retrieve(self, request, username, *args, **kwargs):
+    def retrieve(self, request, id, *args, **kwargs):
         try:
             profile = Profile.objects.select_related('user').get(
-                user__username=username
+                user__id=id
             )
         except Profile.DoesNotExist:
             raise ProfileDoesNotExist

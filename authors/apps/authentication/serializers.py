@@ -133,8 +133,6 @@ class UserSerializer(serializers.ModelSerializer):
         source='profile.first_name', read_only=True)
     last_name = serializers.CharField(
         source='profile.last_name', read_only=True)
-    date_of_birth = serializers.CharField(
-        source='profile.date_of_birth', read_only=True)
     country = serializers.CharField(source='profile.country', read_only=True)
     bio = serializers.CharField(source='profile.bio', read_only=True)
     image = serializers.CharField(source='profile.image', read_only=True)
@@ -163,6 +161,7 @@ class UserSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password', None)
 
         profile_data = validated_data.pop('profile', {})
+        
 
         for (key, value) in validated_data.items():
             # For the keys remaining in `validated_data`, we will set them on

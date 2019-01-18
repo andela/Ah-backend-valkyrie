@@ -12,7 +12,6 @@ class Profile(models.Model):
 
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50, blank=True)
-    date_of_birth = models.DateField(auto_now=True)
     country = models.CharField(max_length=50, blank=True)
     bio = models.TextField(blank=True)
     image = models.URLField(blank=True)
