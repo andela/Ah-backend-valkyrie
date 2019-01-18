@@ -16,7 +16,7 @@ class TestUserRegistration(BaseTestMethods):
         self.assertEqual(user.__str__(), self.user['user']['email'])
         self.assertEqual(user.get_full_name, self.user['user']['username'])
         self.assertEqual(user.get_short_name(), self.user['user']['username'])
-        self.assertTrue(user.is_active)
+        self.assertFalse(user.is_active)
         self.assertFalse(user.is_staff)
 
     def test_create_super_user(self):
@@ -41,7 +41,25 @@ class TestUserRegistration(BaseTestMethods):
         self.assertEqual(
             response.data.get('email'), self.user['user']['email']
         )
-        
+
+    def test_unverified_account_user_login(self):
+        self.register_user()
+        data = {
+            'user': {
+                'email': self.user['user']['email'],
+                'password': self.user['user']['password']}
+        }
+        url = reverse('user-login')
+        response = self.client.post(url, data=data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data, {
+                'errors': {
+                    'error': ['A user with this email and password was not found.']
+                }
+            }
+        )
+
     def test_login_with_un_matching_email(self):
 
         self.register_user()

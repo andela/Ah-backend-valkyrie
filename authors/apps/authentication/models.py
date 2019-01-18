@@ -51,6 +51,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(username, email, password)
         user.is_superuser = True
         user.is_staff = True
+        user.is_active = True
         user.save()
 
         return user
@@ -76,7 +77,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # will simply offer users a way to deactivate their account instead of
     # letting them delete it. That way they won't show up on the site anymore,
     # but we can still analyze the data.
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
 
     # social media field_ids.
     facebook_id = models.CharField(db_index=False, max_length=255)
