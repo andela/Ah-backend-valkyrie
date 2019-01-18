@@ -73,6 +73,19 @@ class BaseTestMethods(APITestCase):
 
         return response
 
+    def register_and_login_user2(self):
+        self.verify_registered_user2_account()
+
+        url = reverse('user-login')
+        data = {
+            'user': {
+                'email': self.user['user2']['email'],
+                'password': self.user['user2']['password']}
+        }
+        response = self.client.post(url, data=data, format='json')
+
+        return response
+
     def get_user_acccount_verification_email(self):
         userData = {
             'user': {
@@ -87,6 +100,32 @@ class BaseTestMethods(APITestCase):
     def verify_registered_user_account(self):
         sent_email = self.get_user_acccount_verification_email()
         msg = sent_email[0]
+        url = (msg.body)[176:]
+        splited_url = url.split('/')
+        token = splited_url[7]
+        user_email = splited_url[8]
+
+        return self.client.get(
+            reverse(
+                'user-account-verification', 
+                args=(token, user_email)
+            ), format="json"
+        )
+
+    def get_user2_acccount_verification_email(self):
+            userData = {
+                'user': {
+                    'email': self.user['user2']['email'], 
+                    'password': self.user['user2']['password'],
+                    'username': self.user['user2']['username']
+                }
+            }
+            self.create_user(userData)
+            return mail.outbox
+
+    def verify_registered_user2_account(self):
+        sent_email = self.get_user2_acccount_verification_email()
+        msg = sent_email[1]
         url = (msg.body)[176:]
         splited_url = url.split('/')
         token = splited_url[7]
