@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .service_providers import ServiceProviders
+from .service_providers import ServiceProviders, TwitterAuthTokenVerification
 from .register import register_user
 import facebook
 from django.http import JsonResponse
@@ -58,3 +58,28 @@ class GoogleSerializer(serializers.Serializer):
             email=email, name=name, **my_kwargs
         )
 
+
+class TwitterSerializer(serializers.Serializer):
+    """Handles serialization of twitter related data"""
+
+    auth_token = serializers.CharField()
+
+    def validate_auth_token(self, auth_token):
+
+        user_info = TwitterAuthTokenVerification.validate_twitter_auth_tokens(
+            auth_token)
+        try:
+            user_info['id_str']
+        except:
+            raise serializers.ValidationError(
+                'The token is invalid or expired. Please login again.'
+            )
+
+        user_id = user_info['id_str']
+        email = user_info['email']
+        name = user_info['name']
+        my_kwargs = {
+            '{0}_{1}'.format('twitter', 'id'): user_id
+        }
+
+        return register_user(email=email, name=name, **my_kwargs)
