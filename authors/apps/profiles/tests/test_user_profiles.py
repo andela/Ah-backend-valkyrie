@@ -11,63 +11,75 @@ class TestUserProfile(BaseTestMethods):
     Test cases for user retrieving an existing profile
     """
 
-    def test_retrieve_an_existing_profile(self):
-        response = self.retrieve_user_profile()
-
+    def test_retrieve_profile_of_an_existing_user(self):
+        user = self.register_and_loginUser()
+        token = user.data['token']
+        this_user = User.objects.get(email=user.data['email'])
+        response = self.client.get(
+            '/api/v1/users/{}/profile/'.format(this_user.id),
+            HTTP_AUTHORIZATION=f'Bearer {token}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             json.loads(response.content)['profile']['username'],
             "testuser"
         )
-        self.assertEqual(
-            json.loads(response.content)['profile']['bio'],
-            ""
-        )
 
-    def test_a_non_existent_profile(self):
-        response = self.client.get('/api/v1/profiles/testusers1')
-
+    def test_retrieve_profile_of_a_non_existing_user(self):
+        user = self.register_and_loginUser()
+        token = user.data['token']
+        response = self.client.get(
+            '/api/v1/users/{}/profile/'.format(2),
+            HTTP_AUTHORIZATION=f'Bearer {token}')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             json.loads(response.content)['errors']['detail'],
             "The profile you requested does not exist."
         )
 
-    def test_update_profile(self):
-        user = User.objects.create_user(**self.user.get('user'))
+    def test_retrieve_profile_of_an_existing_user_with_invalid_token(self):
+        user = self.register_and_loginUser()
+        token = self.invalid_token
+        this_user = User.objects.get(email=user.data['email'])
+        response = self.client.get(
+            '/api/v1/users/{}/profile/'.format(this_user.id),
+            HTTP_AUTHORIZATION=f'Bearer {token}')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual('Invalid token', response.data.get('detail'))
+
+    def test_user_can_update_their_profile(self):
+        user = self.register_and_loginUser()
+        token = user.data['token']
+        this_user = User.objects.get(email=user.data['email'])
         data = {
             "user": {
                 "bio": "I love music",
                 "image": "http://images.com/profile.jpg"
             }
         }
-
         response = self.client.put(
-            '/api/v1/users/{}/'.format(user.id), data=data, format='json')
-        print(response.data)
+            '/api/v1/users/{}/'.format(this_user.id), data=data, format='json',
+            HTTP_AUTHORIZATION=f'Bearer {token}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content)[
                          'user']['bio'], "I love music")
 
-    def test_update_a_non_owner_profile(self):
-        owner = User.objects.create_user(**self.user.get('user'))
-        data = {
-            "user": {
-                "bio": "I love music",
-                "image": "http://images.com/profile.jpg"
-            }
-        }
-        user_data = {
+    def test_user_cannot_update_another_users_profile(self):
+        owner = self.register_and_loginUser()
+        owner_token = owner.data['token']
+
+        non_owner = self.register_and_login_user2()
+        this_non_owner = User.objects.get(email=non_owner.data['email'])
+
+        profile_data = {
             'user': {
                 'username': 'frank',
                 'email': 'frank@andela.com',
                 'password': 'TestUser12#'
             }
         }
-        non_owner = User.objects.create_user(**user_data['user'])
         response = self.client.put(
-            '/api/v1/users/{}/'.format(non_owner.id), data=data, format='json',
-            HTTP_AUTHORIZATION=f'Bearer {owner.token}')
+            '/api/v1/users/{}/'.format(this_non_owner.id), data=profile_data, format='json',
+            HTTP_AUTHORIZATION=f'Bearer {owner_token}')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
             json.loads(response.content)['user']['detail'],
