@@ -6,7 +6,8 @@ from .models import User
 import re
 
 class CustomValidator:
-    def password_strength(self, value):
+    @classmethod
+    def password_strength(cls, value):
         """
         Test if password contains numbers, letters and special
         characters else raise serializer Validation error

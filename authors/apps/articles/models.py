@@ -2,11 +2,13 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from authors.apps.authentication.models import User
 
+
 class Tag(models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
+
 
 class Article(models.Model):
     title = models.CharField(max_length=100)
@@ -30,3 +32,19 @@ class Article(models.Model):
 
     class Meta:
         ordering = ('createdAt',)
+
+    @property
+    def likes(self):
+        pass
+
+    @property
+    def dislikes(self):
+        pass
+
+
+class LikeArticle(models.Model):
+    article_id = models.ForeignKey(Article, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    like = models.BooleanField(default=False)
+    created_at = models.DateField(auto_now_add=True)
+    modified_at = models.DateField(auto_now=True)
