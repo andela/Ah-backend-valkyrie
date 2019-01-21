@@ -6,7 +6,7 @@ from rest_framework import status
 from pprint import pprint
 
 from authors.apps.authentication.tests.base import BaseTestMethods
-from authors.apps.articles.models import Article, Tag
+from authors.apps.articles.models import Article
 from authors.apps.authentication.models import User
 
 class ArticleTestCase(BaseTestMethods):
