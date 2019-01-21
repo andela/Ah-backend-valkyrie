@@ -87,14 +87,14 @@ class BaseTestMethods(APITestCase):
         return response
 
     def get_user_acccount_verification_email(self):
-        userData = {
+        user_data = {
             'user': {
                 'email': self.user['user']['email'], 
                 'password': self.user['user']['password'],
                 'username': self.user['user']['username']
             }
         }
-        self.create_user(userData)
+        self.create_user(user_data)
         return mail.outbox
 
     def verify_registered_user_account(self):
@@ -113,14 +113,14 @@ class BaseTestMethods(APITestCase):
         )
 
     def get_user2_acccount_verification_email(self):
-            userData = {
+            user_data = {
                 'user': {
                     'email': self.user['user2']['email'], 
                     'password': self.user['user2']['password'],
                     'username': self.user['user2']['username']
                 }
             }
-            self.create_user(userData)
+            self.create_user(user_data)
             return mail.outbox
 
     def verify_registered_user2_account(self):

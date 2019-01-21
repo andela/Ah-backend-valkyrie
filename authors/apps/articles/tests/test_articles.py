@@ -3,8 +3,6 @@ from django.test import TestCase
 from  rest_framework.reverse import reverse
 from rest_framework import status
 
-from pprint import pprint
-
 from authors.apps.authentication.tests.base import BaseTestMethods
 from authors.apps.articles.models import Article
 from authors.apps.authentication.models import User
@@ -91,7 +89,6 @@ class ArticleTestCase(BaseTestMethods):
         
         # create second user and update first user's article
         user2_token = get_user2_token(self)
-        pprint("WE HERE")
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + user2_token 
         )
@@ -143,5 +140,4 @@ def get_user_token(self):
 
 def get_user2_token(self):
     user = self.register_and_login_user2()
-    pprint(user.data)
     return user.data['token']
