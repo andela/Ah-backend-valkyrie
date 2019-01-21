@@ -31,3 +31,4 @@ urllib3
 whitenoise
 wrapt
 Pillow
+python-twitter

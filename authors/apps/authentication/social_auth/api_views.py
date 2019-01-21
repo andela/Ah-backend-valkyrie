@@ -13,7 +13,9 @@ from rest_framework import generics
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from authors.apps.authentication.renderers import UserJSONRenderer
-from .serializers import FacebookSerializer, GoogleSerializer
+from .serializers import(
+    FacebookSerializer, GoogleSerializer, TwitterSerializer
+)
 
 
 class FacebookSociaLoginView(generics.ListCreateAPIView):
@@ -40,3 +42,14 @@ class GoogleSociaLoginView(generics.ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class TwitterSociaLoginView(generics.ListCreateAPIView):
+    permission_classes = (AllowAny,)
+    renderer_classes = (UserJSONRenderer,)
+
+    def post(self, request):
+        serializer_class = TwitterSerializer
+        user = request.data.get('user', {})
+        serializer = serializer_class(data=user)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

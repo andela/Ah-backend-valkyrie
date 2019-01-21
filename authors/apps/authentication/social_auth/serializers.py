@@ -6,13 +6,12 @@ from django.http import JsonResponse
 
 
 class FacebookSerializer(serializers.Serializer):
-    # serialization of facebook related data
+    # serialization of facebook data
 
     auth_token = serializers.CharField()
 
     def validate_auth_token(self, access_token):
         my_facebook = ServiceProviders()
-        # try:
         user_info = my_facebook.verify(
             provider="facebook", token=access_token
         )
@@ -35,7 +34,7 @@ class FacebookSerializer(serializers.Serializer):
 
 
 class GoogleSerializer(serializers.Serializer):
-    # serialization of google related data.
+    # serialization of google data.
 
     auth_token = serializers.CharField()
 
@@ -58,3 +57,27 @@ class GoogleSerializer(serializers.Serializer):
             email=email, name=name, **my_kwargs
         )
 
+
+class TwitterSerializer(serializers.Serializer):
+    # serialization of twitter data
+
+    auth_token = serializers.CharField()
+
+    def validate_auth_token(self, auth_token):
+        twitter = ServiceProviders()
+        user_info = twitter.verify(provider="twitter", token=auth_token)
+        try:
+            user_info['id_str']
+        except:
+            raise serializers.ValidationError(
+                'Invalid or expired token. Please login again'
+            )
+        user_id = user_info['id_str']
+        email = user_info['email']
+        name = user_info['name']
+        my_kwargs = {
+            '{0}_{1}'.format('twitter', 'id'): user_id
+        }
+        return register_user(
+            email=email, name=name, **my_kwargs
+        )
