@@ -74,6 +74,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     # but we can still analyze the data.
     is_active = models.BooleanField(default=False)
 
+    # social media field_ids.
+    facebook_id = models.CharField(db_index=False, max_length=255)
+    google_id = models.CharField(db_index=False, max_length=255)
+    twitter_id = models.CharField(db_index=False, max_length=255)
+    is_verified = models.BooleanField(default=False)
+    # The `is_staff` flag is expected by Django to determine who can and cannot
+    # log into the Django admin site. For most users, this flag will always be
+    # falsed.
+
     # The `is_staff` flag is expected by Django to determine who can and cannot
     # log into the Django admin site. For most users, this flag will always be
     # falsed.

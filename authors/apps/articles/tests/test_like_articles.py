@@ -81,7 +81,7 @@ class TestLikeArticle(BaseTestMethods):
         self.assertFalse(res.data.get('like'), False)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_like_article_without_article_field(self):
+    def test_like_article_without_slug_field(self):
         """Tests that like or dislike article requires the slug field"""
 
         user = self.register_and_loginUser()
@@ -195,3 +195,23 @@ class TestLikeArticle(BaseTestMethods):
             article_id=article.id
         )
         self.assertEqual(likes.get('count'), 1)
+
+    def test_like_article_with_invalid_slug(self):
+        """
+        Tests that like/dislike article fails for a slug that
+        does not exists
+        """
+        user = self.register_and_loginUser()
+        like_url = reverse('articles:like-article')
+        data = {
+            'slug': 'this-does-not-exist',
+            'like': True
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + user.data.get('token'))
+        response = self.client.post(like_url, data=data, format='json')
+        self.assertTrue(
+            response.data.get('detail'),
+            'Article with that slug was not found'
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

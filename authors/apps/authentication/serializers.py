@@ -21,7 +21,7 @@ class CustomValidator:
         ) is None:
             raise serializers.ValidationError(
                 {
-                    'password':'Password must have numbers, ' +
+                    'password': 'Password must have numbers, ' +
                     'letters and special characters.'
                 }
             )

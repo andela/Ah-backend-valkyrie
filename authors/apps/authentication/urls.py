@@ -12,7 +12,7 @@ urlpatterns = [
         name='update-retrieve-user'
     ),
     path(
-        'users/',
+        'users/register',
         RegistrationAPIView.as_view(),
         name='user-registration'),
     path(

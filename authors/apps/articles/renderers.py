@@ -9,7 +9,6 @@ class LikeArticleJSONRenderer(JSONRenderer):
     def render(self, data, media_type=None, renderer_context=None):
         errors = data.get('errors', None)
         custom_errors = {}
-        print(errors)
 
         if errors is not None:
             for key in errors:

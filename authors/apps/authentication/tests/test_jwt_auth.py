@@ -61,7 +61,18 @@ class TestJWTAuthentication(BaseTestMethods):
 
     def test_that_login_returns_token(self):
         """Tests that a user receives a token on successful login"""
+        self.register_and_loginUser()
         response = self.register_and_loginUser()
+        self.register_user()
+        self.register_and_loginUser()
+        url = reverse('user-login')
+        data = {
+            'user': {
+                'email': self.user.get('user').get('email'),
+                'password': self.user.get('user').get('password')
+            }
+        }
+        response = self.client.post(url, data=data, format='json')
         self.assertIn('token', response.data)
         self.assertEqual(3, len(response.data.get('token').split('.')))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -137,8 +148,6 @@ class TestJWTAuthentication(BaseTestMethods):
         }
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + user.token)
         res = self.client.put(url, data=data, format='json')
-        print(res.data)
-
         login_url = reverse('user-login')
         data = {
             'user': {

@@ -1,6 +1,7 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import NotFound
 
 from . import models
 from . import serializers
@@ -8,6 +9,7 @@ from .renderers import LikeArticleJSONRenderer
 from .helper import LikeHelper
 
 from authors.apps.core import authority
+
 
 
 class ListCreateArticle(generics.ListCreateAPIView):
@@ -36,7 +38,7 @@ class RetrieveAuthorArticles(generics.ListAPIView):
     serializer_class = serializers.ArticleSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(author_id=self.kwargs.get('pk'))
+	    return self.queryset.filter(author_id=self.kwargs.get('pk'))
 
 
 class LikeArticleAPIView(APIView):
@@ -49,10 +51,15 @@ class LikeArticleAPIView(APIView):
         article = None
         slug = request.data.get('slug')
         if slug and len(slug.strip(' ')) > 0:
-            article = self.like_helper_class.get_article_by_slug(
-                model=models.Article,
-                slug=request.data.get('slug')
-            )
+            try:
+                article = self.like_helper_class.get_article_by_slug(
+                    model=models.Article,
+                    slug=request.data.get('slug')
+                )
+            except:
+                msg = 'Article with that slug was not found'
+                raise NotFound(detail=msg, code=status.HTTP_404_NOT_FOUND)
+
         data = {
             "article": article.id if article else None,
             "user": request.user.id,
