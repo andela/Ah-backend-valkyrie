@@ -61,16 +61,7 @@ class TestJWTAuthentication(BaseTestMethods):
 
     def test_that_login_returns_token(self):
         """Tests that a user receives a token on successful login"""
-
-        self.register_user()
-        url = reverse('user-login')
-        data = {
-            'user': {
-                'email': self.user.get('user').get('email'),
-                'password': self.user.get('user').get('password')
-            }
-        }
-        response = self.client.post(url, data=data, format='json')
+        response = self.register_and_loginUser()
         self.assertIn('token', response.data)
         self.assertEqual(3, len(response.data.get('token').split('.')))
         self.assertEqual(response.status_code, status.HTTP_200_OK)

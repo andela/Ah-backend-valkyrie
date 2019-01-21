@@ -30,3 +30,4 @@ typed-ast
 urllib3
 whitenoise
 wrapt
+Pillow

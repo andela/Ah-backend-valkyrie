@@ -1,15 +1,16 @@
 from django.urls import path
-
 from .views import (
-    ListCreateArticle, ListCreateTag, RetrieveUpdateDestroyArticle,
-    LikeArticleAPIView
+    ListCreateArticle,
+    RetrieveUpdateDestroyArticle,
+    RetrieveAuthorArticles, LikeArticleAPIView
 )
 
 app_name = "articles"
 urlpatterns = [
     path('', ListCreateArticle.as_view(), name="articles_list"),
-    path('<int:pk>/', RetrieveUpdateDestroyArticle.as_view(), name="article_detail"),
-    path('tags', ListCreateTag.as_view(), name="tags_list"),
-    path('tags/<int:pk>/', RetrieveUpdateDestroyArticle.as_view(), name="tag_detail"),
-    path('like/', LikeArticleAPIView.as_view(), name='like-article')
+    path('<slug:slug>/', RetrieveUpdateDestroyArticle.as_view(),
+         name="article_detail"),
+    path('author/<int:pk>/', RetrieveAuthorArticles.as_view(),
+         name="author_articles"),
+    path('like/', LikeArticleAPIView.as_view(), name='like-article'),
 ]

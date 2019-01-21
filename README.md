@@ -8,6 +8,34 @@ Create a community of like minded authors to foster inspiration and innovation
 by leveraging the modern web.
 
 ---
+### How to Set up the environment
+
+- Make a copy of `.env.example` to create `.env` file within the root directory.
+- Add your Postgres database url to the `.env` file E.g `postgres://username:password@localhost:portnumber/databasename`.
+if your database does not have a password your can use `postgres://username@localhost:portnumber/database_name`
+- Leave the `SECRET_KEY` as `this-is-hard-to-break`
+
+#### How to configure email
+- Use a valid gmail account or create one with [Sendgrid](https://sendgrid.com)
+- Fill in the environment variables with your login credentials.
+E.g **Using Gmail as your SMTP**
+
+* `EMAIL_HOST='smtp.gmail.com'`, 
+* `EMAIL_HOST_USER='youremailaddress@gmail.com'`,  
+* `EMAIL_HOST_PASSWORD='yourgmailpassword'`, 
+
+### How to run the App
+
+- Create a virtual environment and activate it
+- Install the modules from `requirements.txt` using `pip install -r requirements.txt`
+- Make migrations using `python manage.py makemigrations`
+- Run the migration `python manage.py migrate`
+- Run the app `python manage.py runserver`
+
+### How to run the Tests
+- Use `python manage.py test` to run the tests
+
+---
 
 ## API Spec
 The preferred JSON object to be returned by the API should be structured as follows:
