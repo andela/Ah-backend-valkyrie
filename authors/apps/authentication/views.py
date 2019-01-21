@@ -113,10 +113,6 @@ class LoginAPIView(APIView):
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
-<<<<<<< HEAD
-    permission_classes = (AllowAny,)
-=======
->>>>>>> 01087fc... Fix(User profile): A logged in user should update their own profile
     renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
@@ -131,32 +127,20 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         user_data = request.data.get('user', {})
-<<<<<<< HEAD
         user = User.objects.get(id=kwargs.get('pk'))
-=======
         if self.request.user.id != self.kwargs.get("pk"):
             raise PermissionDenied("You are not allowed perform this action")
 
->>>>>>> 01087fc... Fix(User profile): A logged in user should update their own profile
         serializer_data = {
             'username': user_data.get('username', user.username),
             'email': user_data.get('email', user.email),
 
             'profile': {
-<<<<<<< HEAD
-                'first_name': user_data.get('first_name', user.profile.first_name),
-                'last_name': user_data.get('last_name', user.profile.last_name),
-                'date_of_birth': user_data.get('date_of_birth', user.profile.date_of_birth),
-                'country': user_data.get('country', user.profile.country),
-                'bio': user_data.get('bio', user.profile.bio),
-                'image': user_data.get('image', user.profile.image)
-=======
                 'first_name': user_data.get('first_name', request.user.profile.first_name),
                 'last_name': user_data.get('last_name', request.user.profile.last_name),
                 'country': user_data.get('country', request.user.profile.country),
                 'bio': user_data.get('bio', request.user.profile.bio),
                 'image': user_data.get('image', request.user.profile.image)
->>>>>>> 01087fc... Fix(User profile): A logged in user should update their own profile
             }
         }
 

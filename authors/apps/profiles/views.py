@@ -1,7 +1,7 @@
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Profile
 from .serializers import ProfileSerializer
@@ -12,7 +12,7 @@ from .exceptions import ProfileDoesNotExist
 class ProfileRetrieveAPIView(RetrieveAPIView):
     serializer_class = ProfileSerializer
     renderer_classes = (ProfileJSONRenderer,)
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def retrieve(self, request, id, *args, **kwargs):
         try:

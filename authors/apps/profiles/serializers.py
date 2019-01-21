@@ -7,7 +7,6 @@ class ProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     first_name = serializers.CharField(allow_blank=True, required=False)
     last_name = serializers.CharField(allow_blank=True, required=False)
-    date_of_birth = serializers.DateField(required=False)
     country = serializers.CharField(allow_blank=True, required=False)
     bio = serializers.CharField(allow_blank=True, required=False)
     image = serializers.SerializerMethodField()
@@ -15,7 +14,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['username', 'first_name', 'last_name',
-                  'date_of_birth', 'country', 'bio', 'image', 'following']
+                  'country', 'bio', 'image', 'following']
         read_only_fields = ['username']
 
     def get_image(self, obj):

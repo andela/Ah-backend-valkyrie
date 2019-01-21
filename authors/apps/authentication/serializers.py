@@ -1,12 +1,10 @@
-import re
-from authors.apps.profiles.serializers import ProfileSerializer
 from django.contrib.auth import authenticate
 
 from rest_framework import serializers
 
 from .models import User
-from authors.apps.profiles.serializers import ProfileSerializer
 import re
+from authors.apps.profiles.serializers import ProfileSerializer
 
 
 class CustomValidator:
@@ -140,7 +138,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('email', 'username', 'password', 'profile', 'first_name',
-                  'last_name', 'date_of_birth', 'country', 'bio', 'image')
+                  'last_name', 'country', 'bio', 'image')
 
         # The `read_only_fields` option is an alternative for explicitly
         # specifying the field with `read_only=True` like we did for password
@@ -159,7 +157,6 @@ class UserSerializer(serializers.ModelSerializer):
         # here is that we need to remove the password field from the
         # `validated_data` dictionary before iterating over it.
         password = validated_data.pop('password', None)
-
         profile_data = validated_data.pop('profile', {})
 
         for (key, value) in validated_data.items():
@@ -176,7 +173,6 @@ class UserSerializer(serializers.ModelSerializer):
         # the model. It's worth pointing out that `.set_password()` does not
         # save the model.
         instance.save()
-
         for (key, value) in profile_data.items():
             setattr(instance.profile, key, value)
 

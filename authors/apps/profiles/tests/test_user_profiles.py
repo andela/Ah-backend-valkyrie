@@ -2,7 +2,7 @@ import json
 
 from rest_framework import status
 
-from authors.apps.profiles.tests.base import BaseTestMethods
+from authors.apps.authentication.tests.base import BaseTestMethods
 from authors.apps.authentication.models import User
 
 
