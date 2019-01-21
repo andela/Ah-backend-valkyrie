@@ -4,7 +4,7 @@ from  rest_framework.reverse import reverse
 from rest_framework import status
 
 from authors.apps.authentication.tests.base import BaseTestMethods
-from authors.apps.articles.models import Article, Tag
+from authors.apps.articles.models import Article
 from authors.apps.authentication.models import User
 
 class ArticleTestCase(BaseTestMethods):
@@ -88,9 +88,9 @@ class ArticleTestCase(BaseTestMethods):
         article_slug = request.data['slug']
         
         # create second user and update first user's article
-        user2 = User.objects.create_user(**self.user.get('user2'))
+        user2_token = get_user2_token(self)
         self.client.credentials(
-            HTTP_AUTHORIZATION='Bearer ' + user2.token
+            HTTP_AUTHORIZATION='Bearer ' + user2_token 
         )
         self.article['title'] = "Test article yesterday"
         update_url = reverse(self.single_article_url, args=[article_slug])
@@ -122,9 +122,9 @@ class ArticleTestCase(BaseTestMethods):
         article_slug = request.data['slug']
         
         # create second user and delete first user's article
-        user2 = User.objects.create_user(**self.user.get('user2'))
+        user2 = get_user2_token(self)
         self.client.credentials(
-            HTTP_AUTHORIZATION='Bearer ' + user2.token
+            HTTP_AUTHORIZATION='Bearer ' + user2
         )
         delete_url = reverse(self.single_article_url, args=[article_slug])
         request = self.client.put(delete_url, data=self.article, format='json')  
@@ -135,5 +135,9 @@ class ArticleTestCase(BaseTestMethods):
         )
 
 def get_user_token(self):
-    user = User.objects.create_user(**self.user.get('user'))
-    return user.token
+    user = self.register_and_loginUser()
+    return user.data['token']
+
+def get_user2_token(self):
+    user = self.register_and_login_user2()
+    return user.data['token']
