@@ -6,7 +6,6 @@ from authors.apps.authentication.serializers import UserSerializer
 from .models import Article, LikeArticle
 
 
-
 class ArticleSerializer(serializers.ModelSerializer):
     author = serializers.PrimaryKeyRelatedField(
         read_only=True, default=serializers.CurrentUserDefault()
@@ -14,6 +13,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
+            'id',
             'slug',
             'title',
             'description',
@@ -21,6 +21,8 @@ class ArticleSerializer(serializers.ModelSerializer):
             'createdAt',
             'updatedAt',
             'author',
+            'likes',
+            'dislikes'
         )
         model = Article
         read_only_fields = ('author',)
@@ -29,13 +31,13 @@ class ArticleSerializer(serializers.ModelSerializer):
 class LikeArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = LikeArticle
-        fields = ['article_id', 'user_id', 'like', 'modified_at']
+        fields = ['article', 'user', 'like', 'modified_at']
 
     def create(self, validated_data):
         try:
             self.instance = LikeArticle.objects.get(
-                article_id=validated_data.get('article_id'),
-                user_id=validated_data.get('user_id')
+                article_id=validated_data.get('article'),
+                user_id=validated_data.get('user')
             )
         except Exception:
             return LikeArticle.objects.create(**validated_data)

@@ -1,10 +1,13 @@
-from datetime import datetime
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
 
+from .helper import LikeHelper
+
 
 class Article(models.Model):
+    helper = LikeHelper()
+
     title = models.CharField(max_length=100)
     slug = models.SlugField(null=True)
     description = models.CharField(max_length=300)
@@ -33,19 +36,27 @@ class Article(models.Model):
 
     @property
     def likes(self):
-        pass
+        return self.helper.get_likes_or_dislike(
+            model=LikeArticle,
+            like=True,
+            article_id=self.pk
+        )
 
     @property
     def dislikes(self):
-        pass
+        return self.helper.get_likes_or_dislike(
+            model=LikeArticle,
+            like=False,
+            article_id=self.pk
+        )
 
 
 class LikeArticle(models.Model):
-    article_id = models.ForeignKey(Article, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     like = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateField(auto_now=True)
 
 
 class ArticleImage(models.Model):

@@ -12,5 +12,5 @@ urlpatterns = [
          name="article_detail"),
     path('author/<int:pk>/', RetrieveAuthorArticles.as_view(),
          name="author_articles"),
-    path('like/', LikeArticleAPIView.as_view(), name='like-article'),
+    path('like', LikeArticleAPIView.as_view(), name='like-article'),
 ]

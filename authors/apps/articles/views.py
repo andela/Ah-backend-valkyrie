@@ -44,8 +44,8 @@ class LikeArticleAPIView(APIView):
 
     def post(self, request):
         data = {
-            "article_id": request.data.get('article'),
-            "user_id": request.user.id,
+            "article": request.data.get('article'),
+            "user": request.user.id,
             "like": request.data.get('like')
         }
         serializer = self.serializer_class(data=data)

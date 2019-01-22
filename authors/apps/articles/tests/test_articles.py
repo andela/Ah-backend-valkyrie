@@ -1,11 +1,10 @@
-from django.test import TestCase
-
-from  rest_framework.reverse import reverse
+from rest_framework.reverse import reverse
 from rest_framework import status
 
 from authors.apps.authentication.tests.base import BaseTestMethods
 from authors.apps.articles.models import Article
 from authors.apps.authentication.models import User
+
 
 class ArticleTestCase(BaseTestMethods):
 
@@ -22,7 +21,7 @@ class ArticleTestCase(BaseTestMethods):
     def test_get_author_article(self):
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + get_user_token(self
-        ))
+                                                          ))
         url = reverse(self.get_post_article_url)
         request = self.client.post(url, data=self.article, format='json')
         author_id = request.data['author']
@@ -35,8 +34,7 @@ class ArticleTestCase(BaseTestMethods):
     def test_user_creates_article(self):
         url = reverse(self.get_post_article_url)
         self.client.credentials(
-            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self
-        ))
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self))
         request = self.client.post(url, data=self.article, format='json')
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         self.assertEqual(request.data['title'], "Test article today")
@@ -74,7 +72,7 @@ class ArticleTestCase(BaseTestMethods):
         article_slug = request.data['slug']
         self.article['title'] = "Test article yesterday"
         update_url = reverse(self.single_article_url, args=[article_slug])
-        request = self.client.put(update_url, data=self.article, format='json')  
+        request = self.client.put(update_url, data=self.article, format='json')
         self.assertEqual(request.status_code, status.HTTP_200_OK)
         self.assertEqual(request.data['title'], "Test article yesterday")
 
@@ -86,15 +84,15 @@ class ArticleTestCase(BaseTestMethods):
         )
         request = self.client.post(url, data=self.article, format='json')
         article_slug = request.data['slug']
-        
+
         # create second user and update first user's article
         user2_token = get_user2_token(self)
         self.client.credentials(
-            HTTP_AUTHORIZATION='Bearer ' + user2_token 
+            HTTP_AUTHORIZATION='Bearer ' + user2_token
         )
         self.article['title'] = "Test article yesterday"
         update_url = reverse(self.single_article_url, args=[article_slug])
-        request = self.client.put(update_url, data=self.article, format='json')  
+        request = self.client.put(update_url, data=self.article, format='json')
         self.assertEqual(request.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
             request.data['detail'],
@@ -109,7 +107,8 @@ class ArticleTestCase(BaseTestMethods):
         request = self.client.post(url, data=self.article, format='json')
         article_slug = request.data['slug']
         delete_url = reverse(self.single_article_url, args=[article_slug])
-        request = self.client.delete(delete_url, data=self.article, format='json')  
+        request = self.client.delete(
+            delete_url, data=self.article, format='json')
         self.assertEqual(request.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_article_by_invalid_author(self):
@@ -120,23 +119,25 @@ class ArticleTestCase(BaseTestMethods):
         )
         request = self.client.post(url, data=self.article, format='json')
         article_slug = request.data['slug']
-        
+
         # create second user and delete first user's article
         user2 = get_user2_token(self)
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + user2
         )
         delete_url = reverse(self.single_article_url, args=[article_slug])
-        request = self.client.put(delete_url, data=self.article, format='json')  
+        request = self.client.put(delete_url, data=self.article, format='json')
         self.assertEqual(request.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
             request.data['detail'],
             "You do not have permission to perform this action."
         )
 
+
 def get_user_token(self):
     user = self.register_and_loginUser()
     return user.data['token']
+
 
 def get_user2_token(self):
     user = self.register_and_login_user2()
