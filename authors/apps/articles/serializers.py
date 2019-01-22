@@ -1,5 +1,5 @@
 #pylint: disable=E1101
-from rest_framework import serializers
+from rest_framework import serializers, status
 from django.db import models
 
 from authors.apps.authentication.serializers import UserSerializer
@@ -29,6 +29,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class LikeArticleSerializer(serializers.ModelSerializer):
+    action_status = status.HTTP_201_CREATED
     class Meta:
         model = LikeArticle
         fields = ['article', 'user', 'like', 'modified_at']
@@ -46,7 +47,9 @@ class LikeArticleSerializer(serializers.ModelSerializer):
     def _update_like(self, validated_date):
         if self.instance.like == validated_date.get('like'):
             self.instance.delete()
+            self.action_status = status.HTTP_200_OK
         else:
             self.instance.like = validated_date.get('like')
             self.instance.save()
+            self.action_status = status.HTTP_200_OK
         return self.instance

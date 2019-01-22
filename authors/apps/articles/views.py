@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from . import models
 from . import serializers
+from .renderers import LikeArticleJSONRenderer
 
 from authors.apps.core import authority
 
@@ -40,6 +41,7 @@ class RetrieveAuthorArticles(generics.ListAPIView):
 
 class LikeArticleAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+    renderer_classes = (LikeArticleJSONRenderer,)
     serializer_class = serializers.LikeArticleSerializer
 
     def post(self, request):
@@ -52,4 +54,4 @@ class LikeArticleAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=serializer.action_status)
