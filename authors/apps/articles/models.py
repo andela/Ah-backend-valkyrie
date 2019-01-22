@@ -4,11 +4,19 @@ from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
 class Article(models.Model):
     title = models.CharField(max_length=100)
     slug = models.SlugField(null=True)
     description = models.CharField(max_length=300)
     body = models.TextField()
+    tagList = models.ManyToManyField(Tag)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(
@@ -18,6 +26,17 @@ class Article(models.Model):
     
     def __str__(self):
         return self.title
+
+    # @property
+    # def get_tag_names(self):
+    #     newList = []
+    #     print("HERE")
+    #     print(self.tagList)
+    #     for tag_id in self.tagList:
+    #         print(tag_id)
+    #         tag = Tag.objects.filter(id=tag_id)
+    #         newList.append(tag.name)
+    #     return newList
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -33,7 +52,7 @@ class Article(models.Model):
 
 
 class ArticleImage(models.Model):
-    property = models.ForeignKey(
+    article = models.ForeignKey(
         Article,
         related_name='images',
         on_delete=models.CASCADE

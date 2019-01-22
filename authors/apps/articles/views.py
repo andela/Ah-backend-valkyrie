@@ -32,3 +32,15 @@ class RetrieveAuthorArticles(generics.ListAPIView):
 
     def get_queryset(self):
 	    return self.queryset.filter(author_id=self.kwargs.get('pk'))
+
+class ListCreateTag(generics.ListCreateAPIView):
+    queryset = models.Tag.objects.all()
+    serializer_class = serializers.TagSerializer
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+    )
+
+
+class RetrieveUpdateDestroyTag(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Tag.objects.all()
+    serializer_class = serializers.TagSerializer
