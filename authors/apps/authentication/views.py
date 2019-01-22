@@ -1,5 +1,6 @@
 from rest_framework import status
 from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,7 +12,7 @@ from .serializers import (
 )
 from authors.apps.core.email_handler import email_template
 from django.contrib.sites.shortcuts import get_current_site
-from django.contrib.auth.tokens  import default_token_generator
+from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.urls import reverse
@@ -38,7 +39,7 @@ class RegistrationAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def send_verification_email(self, user, request):
-        #Send verification Email to registered user
+        # Send verification Email to registered user
         token = default_token_generator.make_token(user)
         encoded_email = urlsafe_base64_encode(
             force_bytes(user.email)
@@ -56,7 +57,7 @@ class RegistrationAPIView(APIView):
         <p>Thank you for registering with Authors Haven. \
         Please follow the link below to activate your account.</p> \
         <br> {}'.format((user.username).capitalize(), url)
-        
+
         return email_template(subject, content, user.email)
 
 
@@ -82,7 +83,7 @@ class UserAccountVerificationAPIView(APIView):
                 )
             else:
                 return Response(
-                    data={'message': 'Invalid Token used.'}, 
+                    data={'message': 'Invalid Token used.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
         except Exception as ex:
@@ -112,9 +113,9 @@ class LoginAPIView(APIView):
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated,)
     renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated,)
 
     def retrieve(self, request, *args, **kwargs):
         # There is nothing to validate or save here. Instead, we just want the
@@ -125,12 +126,28 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
-        serializer_data = request.data.get('user', {})
+        user_data = request.data.get('user', {})
+        user = User.objects.get(id=kwargs.get('pk'))
+        if self.request.user.id != self.kwargs.get("pk"):
+            raise PermissionDenied("You are not allowed perform this action")
+
+        serializer_data = {
+            'username': user_data.get('username', user.username),
+            'email': user_data.get('email', user.email),
+
+            'profile': {
+                'first_name': user_data.get('first_name', request.user.profile.first_name),
+                'last_name': user_data.get('last_name', request.user.profile.last_name),
+                'country': user_data.get('country', request.user.profile.country),
+                'bio': user_data.get('bio', request.user.profile.bio),
+                'image': user_data.get('image', request.user.profile.image)
+            }
+        }
 
         # Here is that serialize, validate, save pattern we talked about
         # before.
         serializer = self.serializer_class(
-            request.user, data=serializer_data, partial=True
+            user, data=serializer_data, partial=True
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
