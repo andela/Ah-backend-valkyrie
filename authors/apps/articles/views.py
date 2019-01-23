@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions, status
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.exceptions import NotAcceptable
+from rest_framework.exceptions import NotAcceptable, NotFound
 from django.http import Http404
 from django.contrib.auth import get_user_model
 from rest_framework.filters import SearchFilter
@@ -66,34 +66,40 @@ class FavoriteArticlesView(generics.CreateAPIView):
     serializer_class = serializers.FavoriteArticleSerializer
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
-        authority.IsOwnerOrReadOnly,
     )
 
     def perform_create(self, serializer):
-        article = Article.objects.get(slug=self.kwargs.get('slug'))
-        if article.author.id == self.request.user.id:
-            message = "You're not authorised to favorite your own artcle"
+        try:
+            self.article = Article.objects.get(slug=self.kwargs.get('slug'))
+        except:
+            message = "Article doesnot exist"
+            raise NotFound(
+                detail=message, 
+                code=status.HTTP_404_NOT_FOUND
+            )
+
+        if self.article.author.id == self.request.user.id:
+            message = "You are not allowed to favorite your own article"
             raise NotAcceptable(
                 detail=message, 
                 code=status.HTTP_406_NOT_ACCEPTABLE
             )
-        favor = None
+
         try:
-            favor = FavoriteArticle.objects.get(
+            FavoriteArticle.objects.get(
                 author=self.request.user.id, 
-                article=article.id
+                article=self.article.id
             )
         except:
-            serializer.save(author=self.request.user, article_id = article.id)
+            return serializer.save(author=self.request.user, article_id=self.article.id)  
+        
+        message = "Article already favorited by you"
+        raise NotAcceptable(
+            detail=message, 
+            code=status.HTTP_401_UNAUTHORIZED
+        )
             
-        if favor:
-            message = "Article already favorited by you"
-            raise NotAcceptable(
-                detail=message, 
-                code=status.HTTP_401_UNAUTHORIZED
-            )
                  
-            
 class UnfavoriteArticleView(generics.DestroyAPIView):
         queryset = models.FavoriteArticle.objects.all()
         serializer_class = serializers.FavoriteArticleSerializer
@@ -103,8 +109,23 @@ class UnfavoriteArticleView(generics.DestroyAPIView):
         )
 
         def delete(self, request, *args, **kwargs):
+            articles = Article.objects.all().filter(slug=self.kwargs.get('slug'))
+            if not articles.exists():
+                message = "Article doesnot exist"
+                raise NotFound(
+                    detail=message, 
+                    code=status.HTTP_404_NOT_FOUND
+                )
+            favorites = self.queryset.filter(id=self.kwargs.get('pk'))
+            if  not favorites.exists():
+                message = "favorite doesnot exist"
+                raise NotFound(
+                    detail=message, 
+                    code=status.HTTP_404_NOT_FOUND
+                )    
             slug = self.kwargs.get('slug')
             article = Article.objects.get(slug=slug)
+            self.destroy(request, *args, **kwargs)
             return Response(
                 {
                     "article": article.title,
