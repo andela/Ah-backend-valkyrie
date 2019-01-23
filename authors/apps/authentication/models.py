@@ -3,6 +3,7 @@ import jwt
 from datetime import datetime, timedelta
 
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin
 )
@@ -133,3 +134,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             'iat': datetime.utcnow()
         }
         return self.jwt_helper_class.generate_token(payload)
+
+    @classmethod
+    def fetch_user(cls, email):
+        return get_object_or_404(cls, email=email)
