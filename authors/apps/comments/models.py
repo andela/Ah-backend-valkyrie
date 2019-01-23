@@ -17,3 +17,15 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ('createdAt',)
+
+
+class CommentReaction(models.Model):
+    #  Enables a user to like or dislike a comment
+    like = models.BooleanField(default=True)
+    comment = models.ForeignKey(
+        Comment, related_name='comments', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, related_name='users', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.like
