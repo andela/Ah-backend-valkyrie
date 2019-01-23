@@ -132,7 +132,101 @@ class ArticleTestCase(BaseTestMethods):
             request.data['detail'],
             "You do not have permission to perform this action."
         )
+    # test favorite article 
+    def test_favorite_article(self):
+        #create an article
+        url = reverse("articles:articles_list")
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        request = self.client.post(url, data=self.article, format='json')
+        article_slug = request.data['slug']
+        
+        #user favorites an article
+        url  = reverse("articles:favorite-articles", args=[article_slug])
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user2_token(self)
+        )
+        response = self.client.post(url, format='json')
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['article']['slug'], "test-article-today")
 
+        #test user cannot favorite his/her own article  
+    def test_user_cannot_favorite_own_article(self):
+        #create article
+        url = reverse("articles:articles_list")
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        request = self.client.post(url, data=self.article, format='json')
+        article_slug = request.data['slug']
+        
+        #favorite your article
+        url  = reverse("articles:favorite-articles", args=[article_slug])
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_406_NOT_ACCEPTABLE) 
+        print(response.data)
+        self.assertEqual(response.data['detail'], "You're not authorised to favorite your own artcle") 
+
+    def test_user_cannot_favorite_article_again(self):
+        #create article
+        url = reverse("articles:articles_list")
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        request = self.client.post(url, data=self.article, format='json')
+        article_slug = request.data['slug']
+
+        #user favorites article
+        url  = reverse("articles:favorite-articles", args=[article_slug])
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user2_token(self)
+        )
+        response = self.client.post(url, format='json')
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+       
+        # user favorites article again
+        url  = reverse("articles:favorite-articles", args=[article_slug])
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user2_token(self)
+        )
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_406_NOT_ACCEPTABLE)  
+        self.assertEqual(response.data['detail'], "Article already favorited by you")
+
+    def test_unfavorite_article(self):
+        # create an article
+        url = reverse("articles:articles_list")
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        request = self.client.post(url, data=self.article, format='json')
+        article_slug = request.data['slug']
+
+        # Favorite an article
+        url  = reverse("articles:favorite-articles", args=[article_slug])
+        print(url)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user2_token(self)
+        )
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)           
+        favorite_id = response.data['id']
+        
+        #Unfavorite article
+        url  = reverse("articles:unfavorite-articles", args=[article_slug, favorite_id])
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user2_token(self)
+        )
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['status'],"unfavorited")
+        
 def get_user_token(self):
     user = self.register_and_loginUser()
     return user.data['token']
@@ -140,3 +234,5 @@ def get_user_token(self):
 def get_user2_token(self):
     user = self.register_and_login_user2()
     return user.data['token']
+
+        
