@@ -7,11 +7,20 @@ class ArticleJSONRenderer(JSONRenderer):
     charset = 'utf-8'
 
     def render(self, data, media_type=None, renderer_context=None):
-        errors = data.get('errors', None)
+        try:
+            errors = data.get('errors', None)
+            if errors is not None:
+                return super(ArticleJSONRenderer, self).render(data)
 
-        if errors is not None:
-            return super(ArticleJSONRenderer, self).render(data)
+            return json.dumps({
+                'article': data
+            })
 
-        return json.dumps({
-            'article': data
-        })
+            
+        except Exception as identifier:
+            pass
+
+        
+        
+
+        

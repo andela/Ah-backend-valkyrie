@@ -1,6 +1,7 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth import get_user_model
 from rest_framework.renderers import BrowsableAPIRenderer
 from django.http import JsonResponse
 import json
@@ -41,13 +42,20 @@ class RetrieveUpdateDestroyArticle(generics.RetrieveUpdateDestroyAPIView):
         authority.IsOwnerOrReadOnly,
     )
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class RetrieveAuthorArticles(generics.ListAPIView):
     queryset = models.Article.objects.all()
     serializer_class = serializers.ArticleSerializer
 
     def get_queryset(self):
-	    return self.queryset.filter(author_id=self.kwargs.get('pk'))
+        username = self.kwargs.get('username')
+        user_id = get_user_model().objects.get(username=username)
+        return self.queryset.filter(author_id=user_id)
 
 class ListCreateTag(generics.ListCreateAPIView):
     queryset = models.Tag.objects.all()

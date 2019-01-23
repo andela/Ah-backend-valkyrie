@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from  rest_framework.reverse import reverse
 from rest_framework import status
+from pprint import pprint
 
 from authors.apps.authentication.tests.base import BaseTestMethods
 from authors.apps.articles.models import Article
@@ -25,12 +26,12 @@ class ArticleTestCase(BaseTestMethods):
         ))
         url = reverse(self.get_post_article_url)
         request = self.client.post(url, data=self.article, format='json')
-        author_id = request.data['author']
+        author_id = request.data['author']['username']
         author_articles = reverse(self.get_author_articles, args=[author_id])
         request = self.client.get(author_articles)
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.data), 0)
-        self.assertEqual(request.data[0]['author'], author_id)
+        self.assertEqual(request.data[0]['author']['username'], author_id)
 
     def test_user_creates_article(self):
         url = reverse(self.get_post_article_url)
@@ -109,7 +110,8 @@ class ArticleTestCase(BaseTestMethods):
         request = self.client.post(url, data=self.article, format='json')
         article_slug = request.data['slug']
         delete_url = reverse(self.single_article_url, args=[article_slug])
-        request = self.client.delete(delete_url, data=self.article, format='json')  
+        request = self.client.delete(delete_url, data=self.article, format='json')
+        pprint(request.data)
         self.assertEqual(request.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_article_by_invalid_author(self):
