@@ -28,6 +28,17 @@ class Article(models.Model):
     def __str__(self):
         return self.title
 
+    # @property
+    # def get_tag_names(self):
+    #     newList = []
+    #     print("HERE")
+    #     print(self.tagList)
+    #     for tag_id in self.tagList:
+    #         print(tag_id)
+    #         tag = Tag.objects.filter(id=tag_id)
+    #         newList.append(tag.name)
+    #     return newList
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.slug = slugify(self.title)
