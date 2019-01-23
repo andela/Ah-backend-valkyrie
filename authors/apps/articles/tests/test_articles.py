@@ -1,5 +1,4 @@
 from django.test import TestCase
-
 from  rest_framework.reverse import reverse
 from rest_framework import status
 
@@ -30,7 +29,7 @@ class ArticleTestCase(BaseTestMethods):
         request = self.client.get(author_articles)
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.data), 0)
-        self.assertEqual(request.data[0]['author'], author_id)
+        self.assertEqual(request.data['results'][0]['author'], author_id)
 
     def test_user_creates_article(self):
         url = reverse(self.get_post_article_url)

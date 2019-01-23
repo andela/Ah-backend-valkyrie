@@ -1,13 +1,17 @@
 import jwt
-
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 from datetime import datetime, timedelta
-
+from django.core import validators
 from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin
 )
 from django.db import models
 from .jwt_helper import JWTHelper
+from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
@@ -75,6 +79,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     # but we can still analyze the data.
     is_active = models.BooleanField(default=False)
 
+    # social media field_ids.
+    facebook_id = models.CharField(db_index=False, max_length=255)
+    google_id = models.CharField(db_index=False, max_length=255)
+    twitter_id = models.CharField(db_index=False, max_length=255)
+    is_verified = models.BooleanField(default=False)
+    # The `is_staff` flag is expected by Django to determine who can and cannot
+    # log into the Django admin site. For most users, this flag will always be
+    # falsed.
+    
     # The `is_staff` flag is expected by Django to determine who can and cannot
     # log into the Django admin site. For most users, this flag will always be
     # falsed.
@@ -88,14 +101,18 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     # More fields required by Django when specifying a custom user model.
 
+# Tells Django that the UserManager class defined above should manage
+    # objects of this type.
+    objects = UserManager()
+
     # The `USERNAME_FIELD` property tells us which field we will use to log in.
     # In this case, we want that to be the email field.
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    # Tells Django that the UserManager class defined above should manage
-    # objects of this type.
-    objects = UserManager()
+    class Meta:
+        managed = True
+        abstract = False
 
     def __str__(self):
         """
@@ -121,6 +138,21 @@ class User(AbstractBaseUser, PermissionsMixin):
         the user's real name, we return their username instead.
         """
         return self.username
+    
+    @property
+    def get_token(self):
+        """
+        Generate a JSON Web Token on Registration and Login with an expiry
+        date set to 14 days.
+        """
+        dt = datetime.now() + timedelta(days=14)
+
+        token = jwt.encode({
+            'id': self.pk,
+            'exp': int(dt.strftime('%s'))
+        }, settings.SECRET_KEY, algorithm='HS256')
+
+        return token.decode('utf-8')
 
     @property
     def token(self):
@@ -133,3 +165,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             'iat': datetime.utcnow()
         }
         return self.jwt_helper_class.generate_token(payload)
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    Token.objects.get_or_create(user=instance)
