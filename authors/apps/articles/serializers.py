@@ -4,16 +4,17 @@ from django.template.defaultfilters import slugify
 from rest_framework import status
 
 from authors.apps.authentication.serializers import UserSerializer
+from authors.apps.profiles.serializers import ProfileSerializer
 from .models import Article, Tag
 
 
 class TagSerializer(serializers.ModelSerializer):
     def to_representation(self, value):
-        return value.name
+        return value.tag
 
     class Meta:
         model = Tag
-        fields = ('name',)
+        fields = ('tag',)
 
 class TagRelatedField(serializers.RelatedField):
 
@@ -21,18 +22,21 @@ class TagRelatedField(serializers.RelatedField):
         return Tag.objects.all()
 
     def to_internal_value(self, data):
-        name, created = Tag.objects.get_or_create(name=data, slug=slugify(data))
+        tag = Tag.objects.get_or_create(tag=data, slug=slugify(data))
+
+        return tag[0].id
 
     def to_representation(self, value):
         """
         Serialize tagged objects to a simple textual representation.
         """
-        return value.name
+        return value.tag
 
 
 class ArticleSerializer(serializers.ModelSerializer):
 
     author = UserSerializer(required=False)
+    # author = ProfileSerializer(read_only=True)
     tagList = TagRelatedField(many=True, required=False)
 
     class Meta:
@@ -48,3 +52,13 @@ class ArticleSerializer(serializers.ModelSerializer):
         )
         model = Article
         read_only_fields = ('author',)
+
+    def create(self, validated_data):
+        tag = validated_data['tagList']
+        tagList = validated_data.pop('tagList')
+        article = Article.objects.create(**validated_data)
+        for tag in tagList:
+            tag_obj = Tag.objects.get(id=tag) 
+            article.tagList.add(tag_obj)
+
+        return article

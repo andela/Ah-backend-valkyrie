@@ -5,11 +5,12 @@ from django.template.defaultfilters import slugify
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=50)
-    slug = models.SlugField(null=True)
+    tag = models.CharField(max_length=50)
+    slug = models.SlugField(default=tag)
+    created = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name
+        return self.tag
 
 
 class Article(models.Model):
