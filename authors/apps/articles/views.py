@@ -52,7 +52,7 @@ class RetrieveAuthorArticles(generics.ListAPIView):
         user_id = get_user_model().objects.get(username=username)
         return self.queryset.filter(author_id=user_id)
 
-class ListCreateTag(generics.ListCreateAPIView):
+class ListTag(generics.ListAPIView):
     queryset = models.Tag.objects.all()
     serializer_class = serializers.TagSerializer
     permission_classes = (
@@ -65,8 +65,3 @@ class ListCreateTag(generics.ListCreateAPIView):
         return Response({
             "tags": serializer.data
         })
-
-
-class RetrieveUpdateDestroyTag(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Tag.objects.all()
-    serializer_class = serializers.TagSerializer
