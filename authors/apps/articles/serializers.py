@@ -8,6 +8,7 @@ from rest_framework import status
 from authors.apps.authentication.serializers import UserSerializer
 from authors.apps.profiles.serializers import ProfileSerializer
 from .models import Article, Tag, FavoriteArticle, BookmarkArticle
+from ..comments.serializers import CommentSerializer
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -37,10 +38,10 @@ class TagRelatedField(serializers.RelatedField):
 
 
 class ArticleSerializer(serializers.ModelSerializer):
-
     author = UserSerializer(required=False)
     tagList = TagRelatedField(many=True, required=False)
     read_time = serializers.SerializerMethodField()
+    comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         fields = (
@@ -54,10 +55,11 @@ class ArticleSerializer(serializers.ModelSerializer):
             'author',
             'favorited',
             'favorites_count',
-            'read_time'
+            'read_time',
+            'comments',
         )
         model = Article
-        read_only_fields = ('author',)
+        read_only_fields = ('author', 'comments')
 
     def create(self, validated_data):
         tagList = validated_data.pop('tagList')
