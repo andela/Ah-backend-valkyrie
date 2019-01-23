@@ -1,13 +1,14 @@
 from authors.apps.authentication.tests.base import BaseTestMethods
 from rest_framework import status
 
+
 class UserRegistrationAPIViewTestCase(BaseTestMethods):
 
     def test_user_sign_up_without_input(self):
         """
         Test for user registration validation errors.
         """
-        data = {"user": { }}
+        data = {"user": {}}
         dummy_user_data_response = {
             "errors": {
                 "email": ["This field is required."],
@@ -58,7 +59,7 @@ class UserRegistrationAPIViewTestCase(BaseTestMethods):
         response = self.create_user(username_exists_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, username_exists_response)
-    
+
     def test_user_sign_up_password_length(self):
         """
         Test an if password length is less than 8 charaters.
@@ -71,8 +72,8 @@ class UserRegistrationAPIViewTestCase(BaseTestMethods):
             }
         }
         password_length_response = {
-            "errors": { 
-                "password":["Ensure this field has at least 8 characters."]
+            "errors": {
+                "password": ["Ensure this field has at least 8 characters."]
             }
         }
         response = self.create_user(password_length_data)

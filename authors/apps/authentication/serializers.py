@@ -4,6 +4,8 @@ from rest_framework import serializers
 
 from .models import User
 import re
+from authors.apps.profiles.serializers import ProfileSerializer
+
 
 class CustomValidator:
     @classmethod
@@ -23,6 +25,7 @@ class CustomValidator:
                     'letters and special characters.'
                 }
             )
+
 
 class RegistrationSerializer(serializers.ModelSerializer):
     """Serializers registration requests and creates a new user."""
@@ -124,10 +127,19 @@ class UserSerializer(serializers.ModelSerializer):
         min_length=8,
         write_only=True
     )
+    profile = ProfileSerializer(write_only=True)
+    first_name = serializers.CharField(
+        source='profile.first_name', read_only=True)
+    last_name = serializers.CharField(
+        source='profile.last_name', read_only=True)
+    country = serializers.CharField(source='profile.country', read_only=True)
+    bio = serializers.CharField(source='profile.bio', read_only=True)
+    image = serializers.CharField(source='profile.image', read_only=True)
 
     class Meta:
         model = User
-        fields = ('email', 'username', 'password', 'is_active')
+        fields = ('email', 'username', 'password', 'profile', 'first_name',
+                  'last_name', 'country', 'bio', 'image', 'is_active')
 
         # The `read_only_fields` option is an alternative for explicitly
         # specifying the field with `read_only=True` like we did for password
@@ -146,6 +158,7 @@ class UserSerializer(serializers.ModelSerializer):
         # here is that we need to remove the password field from the
         # `validated_data` dictionary before iterating over it.
         password = validated_data.pop('password', None)
+        profile_data = validated_data.pop('profile', {})
 
         for (key, value) in validated_data.items():
             # For the keys remaining in `validated_data`, we will set them on
@@ -161,5 +174,9 @@ class UserSerializer(serializers.ModelSerializer):
         # the model. It's worth pointing out that `.set_password()` does not
         # save the model.
         instance.save()
+        for (key, value) in profile_data.items():
+            setattr(instance.profile, key, value)
+
+        instance.profile.save()
 
         return instance

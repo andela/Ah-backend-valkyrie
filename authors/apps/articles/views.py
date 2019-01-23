@@ -1,7 +1,6 @@
-from rest_framework import generics, status, permissions
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, permissions
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from . import models
 from . import serializers
@@ -41,7 +40,7 @@ class RetrieveAuthorArticles(generics.ListAPIView):
 
 
 class LikeArticleAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     renderer_classes = (LikeArticleJSONRenderer,)
     serializer_class = serializers.LikeArticleSerializer
     like_helper_class = LikeHelper()
