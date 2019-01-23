@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from . import models
 from . import serializers
 from .renderers import LikeArticleJSONRenderer
+from .helper import LikeHelper
 
 from authors.apps.core import authority
 
@@ -43,10 +44,18 @@ class LikeArticleAPIView(APIView):
     permission_classes = (IsAuthenticated,)
     renderer_classes = (LikeArticleJSONRenderer,)
     serializer_class = serializers.LikeArticleSerializer
+    like_helper_class = LikeHelper()
 
     def post(self, request):
+        article = None
+        slug = request.data.get('slug')
+        if slug and len(slug.strip(' ')) > 0:
+            article = self.like_helper_class.get_article_by_slug(
+                model=models.Article,
+                slug=request.data.get('slug')
+            )
         data = {
-            "article": request.data.get('article'),
+            "article": article.id if article else None,
             "user": request.user.id,
             "like": request.data.get('like')
         }

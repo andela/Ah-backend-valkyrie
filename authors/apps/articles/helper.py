@@ -26,3 +26,9 @@ class LikeHelper:
                 get_user_model().objects.get(pk=like.user.id).username
             )
         return usernames
+
+    def get_article_by_slug(self, **kwargs):
+        """Retrieves a user using the unique slug"""
+
+        article = kwargs.get('model').objects.get(slug=kwargs.get('slug'))
+        return article

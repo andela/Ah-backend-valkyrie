@@ -13,7 +13,6 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            'id',
             'slug',
             'title',
             'description',
@@ -30,6 +29,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 class LikeArticleSerializer(serializers.ModelSerializer):
     action_status = status.HTTP_201_CREATED
+
     class Meta:
         model = LikeArticle
         fields = ['article', 'user', 'like', 'modified_at']

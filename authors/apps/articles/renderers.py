@@ -9,12 +9,13 @@ class LikeArticleJSONRenderer(JSONRenderer):
     def render(self, data, media_type=None, renderer_context=None):
         errors = data.get('errors', None)
         custom_errors = {}
+        print(errors)
 
         if errors is not None:
             for key in errors:
                 if key == 'article':
                     custom_errors.update({
-                        key: '{} is a required field'.format(key)
+                        'slug': 'slug is a required field'
                     })
                 if key == 'like':
                     custom_errors.update({

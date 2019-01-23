@@ -18,7 +18,7 @@ class TestLikeArticle(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + user.data.get('token'))
         response = self.client.post(url, data=self.article, format='json')
         data = {
-            'article': response.data.get('id'),
+            'slug': response.data.get('slug'),
             'like': True
         }
         like_url = reverse('articles:like-article')
@@ -35,7 +35,7 @@ class TestLikeArticle(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + user.data.get('token'))
         response = self.client.post(url, data=self.article, format='json')
         data = {
-            'article': response.data.get('id'),
+            'slug': response.data.get('slug'),
             'like': True
         }
         like_url = reverse('articles:like-article')
@@ -54,7 +54,7 @@ class TestLikeArticle(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + user.data.get('token'))
         response = self.client.post(url, data=self.article, format='json')
         data = {
-            'article': response.data.get('id'),
+            'slug': response.data.get('slug'),
             'like': False
         }
         like_url = reverse('articles:like-article')
@@ -71,7 +71,7 @@ class TestLikeArticle(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + user.data.get('token'))
         response = self.client.post(url, data=self.article, format='json')
         data = {
-            'article': response.data.get('id'),
+            'slug': response.data.get('slug'),
             'like': False
         }
         like_url = reverse('articles:like-article')
@@ -82,7 +82,7 @@ class TestLikeArticle(BaseTestMethods):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_like_article_without_article_field(self):
-        """Tests that like or dislike article requires the artcile field"""
+        """Tests that like or dislike article requires the slug field"""
 
         user = self.register_and_loginUser()
         url = reverse(self.get_post_article_url)
@@ -95,8 +95,8 @@ class TestLikeArticle(BaseTestMethods):
         like_url = reverse('articles:like-article')
         res = self.client.post(like_url, data=data, format='json')
         self.assertEqual(
-            json.loads(res.content.decode()).get('article'),
-            'article is a required field'
+            json.loads(res.content.decode()).get('slug'),
+            'slug is a required field'
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -109,7 +109,7 @@ class TestLikeArticle(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + user.data.get('token'))
         response = self.client.post(url, data=self.article, format='json')
         data = {
-            'article': response.data.get('id')
+            'slug': response.data.get('slug')
         }
         like_url = reverse('articles:like-article')
         res = self.client.post(like_url, data=data, format='json')
@@ -137,8 +137,8 @@ class TestLikeArticle(BaseTestMethods):
             'like is a required field'
         )
         self.assertEqual(
-            json.loads(res.content.decode()).get('article'),
-            'article is a required field'
+            json.loads(res.content.decode()).get('slug'),
+            'slug is a required field'
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -153,15 +153,19 @@ class TestLikeArticle(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + user.data.get('token'))
         response = self.client.post(url, data=self.article, format='json')
         data = {
-            'article': response.data.get('id'),
+            'slug': response.data.get('slug'),
             'like': True
         }
         like_url = reverse('articles:like-article')
         self.client.post(like_url, data=data, format='json')
+        article = self.like_helper_class.get_article_by_slug(
+            model=Article,
+            slug=response.data.get('slug')
+        )
         likes = self.like_helper_class.get_likes_or_dislike(
             model=LikeArticle,
             like=True,
-            article_id=response.data.get('id')
+            article_id=article.id
         )
         self.assertEqual(likes.get('count'), 1)
 
@@ -176,14 +180,18 @@ class TestLikeArticle(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + user.data.get('token'))
         response = self.client.post(url, data=self.article, format='json')
         data = {
-            'article': response.data.get('id'),
+            'slug': response.data.get('slug'),
             'like': False
         }
         like_url = reverse('articles:like-article')
         self.client.post(like_url, data=data, format='json')
+        article = self.like_helper_class.get_article_by_slug(
+            model=Article,
+            slug=response.data.get('slug')
+        )
         likes = self.like_helper_class.get_likes_or_dislike(
             model=LikeArticle,
             like=False,
-            article_id=response.data.get('id')
+            article_id=article.id
         )
         self.assertEqual(likes.get('count'), 1)
