@@ -79,10 +79,12 @@ celerybeat-schedule
 
 # dotenv
 .env
+.vscode/*.json
 
 # virtualenv
 venv/
 ENV/
+env/
 
 # Spyder project settings
 .spyderproject
@@ -92,6 +94,8 @@ ENV/
 
 # SQLite3
 db.sqlite3
+authors/apps/authentication/social_auth/__pycache__/*.pyc
+authors/apps/authentication/tests/__pycache__/*.pyc
 
 #VS code
 *.vscode
