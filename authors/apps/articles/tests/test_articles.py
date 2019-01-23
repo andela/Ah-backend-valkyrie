@@ -108,7 +108,11 @@ class ArticleTestCase(BaseTestMethods):
         request = self.client.post(url, data=self.article, format='json')
         article_slug = request.data['slug']
         delete_url = reverse(self.single_article_url, args=[article_slug])
-        request = self.client.delete(delete_url, data=self.article, format='json')  
+        request = self.client.delete(
+            delete_url, 
+            data=self.article, 
+            format='json'
+        ) 
         self.assertEqual(request.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_article_by_invalid_author(self):
@@ -126,7 +130,7 @@ class ArticleTestCase(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + user2
         )
         delete_url = reverse(self.single_article_url, args=[article_slug])
-        request = self.client.put(delete_url, data=self.article, format='json')  
+        request = self.client.put(delete_url, data=self.article, format='json')
         self.assertEqual(request.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
             request.data['detail'],
@@ -150,7 +154,10 @@ class ArticleTestCase(BaseTestMethods):
         response = self.client.post(url, format='json')
         print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['article']['slug'], "test-article-today")
+        self.assertEqual(
+            response.data['article']['slug'], 
+            "test-article-today"
+        )
 
         #test user cannot favorite his/her own article  
     def test_user_cannot_favorite_own_article(self):
@@ -168,9 +175,12 @@ class ArticleTestCase(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
         )
         response = self.client.post(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_406_NOT_ACCEPTABLE) 
+        self.assertEqual(response.status_code, status.HTTP_406_NOT_ACCEPTABLE)
         print(response.data)
-        self.assertEqual(response.data['detail'], "You're not authorised to favorite your own artcle") 
+        self.assertEqual(
+            response.data['detail'], 
+            "You're not authorised to favorite your own artcle"
+        ) 
 
     def test_user_cannot_favorite_article_again(self):
         #create article
@@ -196,8 +206,11 @@ class ArticleTestCase(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + get_user2_token(self)
         )
         response = self.client.post(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_406_NOT_ACCEPTABLE)  
-        self.assertEqual(response.data['detail'], "Article already favorited by you")
+        self.assertEqual(response.status_code, status.HTTP_406_NOT_ACCEPTABLE)
+        self.assertEqual(
+            response.data['detail'], 
+            "Article already favorited by you"
+        )
 
     def test_unfavorite_article(self):
         # create an article
@@ -219,7 +232,10 @@ class ArticleTestCase(BaseTestMethods):
         favorite_id = response.data['id']
         
         #Unfavorite article
-        url  = reverse("articles:unfavorite-articles", args=[article_slug, favorite_id])
+        url  = reverse(
+            "articles:unfavorite-articles", 
+            args=[article_slug, favorite_id]
+        )
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + get_user2_token(self)
         )
