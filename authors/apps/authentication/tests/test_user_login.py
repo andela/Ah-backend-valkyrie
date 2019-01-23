@@ -33,7 +33,7 @@ class TestUserRegistration(BaseTestMethods):
             response.data.get('email'), self.user['user']['email']
         )
         self.assertIsInstance(response.data, dict)
-
+  
     def test_successful_user_login(self):
         response = self.register_and_loginUser()
 
@@ -104,4 +104,16 @@ class TestUserRegistration(BaseTestMethods):
         self.assertIn(
             'This field is required.',
             response.data['errors']['password'][0]
+            )
+    
+    def test_list_users_functionality(self):
+        user = self.register_and_loginUser()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer '+ user.data['token']
         )
+        url = reverse('list-users-functionality')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("here")
+        print(response.data)
+        self.assertEqual(response.data['results'][0]['email'], self.user['user']['email'])

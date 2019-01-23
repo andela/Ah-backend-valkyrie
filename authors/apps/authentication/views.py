@@ -1,10 +1,12 @@
 from rest_framework import status
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .models import User
 from .renderers import UserJSONRenderer
 from .backends import JWTAuthentication
 from .serializers import (
@@ -94,6 +96,13 @@ class UserAccountVerificationAPIView(APIView):
             )
 
 
+class UsersListAPIView(ListAPIView):
+    # Allow any user (authenticated or not) to hit this endpoint.
+    permission_classes = (AllowAny,)
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    
 class LoginAPIView(APIView):
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
