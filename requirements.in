@@ -32,8 +32,11 @@ whitenoise
 wrapt
 Pillow
 python-twitter
+<<<<<<< HEAD
 facebook-sdk
 google-auth-httplib2
 google-auth-oauthlib
 google-auth
 django_currentuser
+=======
+>>>>>>> f8271b7... Feat(Favorite Articles)Add Favorite articles Functionality

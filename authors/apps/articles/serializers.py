@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.db import models
 
 from authors.apps.authentication.serializers import UserSerializer
+from django.http import Http404
 from .models import Article, FavoriteArticle
 
 

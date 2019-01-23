@@ -1,5 +1,3 @@
-
-
 class FavoriteHelper:
 
     def is_favorited(self, **kwargs):
@@ -20,4 +18,3 @@ class FavoriteHelper:
             article=kwargs.get('article_id')
         )
         return len(count_favorite)
-        # print(kwargs.get('article_id'))

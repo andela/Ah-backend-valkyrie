@@ -141,3 +141,29 @@ class BaseTestMethods(APITestCase):
                 args=(token, user_email)
             ), format="json"
         )
+
+    def get_user_token(self):
+        user = self.register_and_loginUser()
+        return user.data['token']
+
+    def get_user2_token(self):
+        user = self.register_and_login_user2()
+        return user.data['token']
+
+    def create_article(self):
+        url = reverse("articles:articles_list")
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.get_user_token() 
+        )
+        request = self.client.post(url, data=self.article, format='json')
+        return request
+        
+    def favorite_article(self):
+        article = self.create_article()
+        article_slug = article.data['slug']
+        url  = reverse("articles:favorite-articles", args=[article_slug])
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.get_user2_token()
+        )
+        response = self.client.post(url, format='json')
+        return response

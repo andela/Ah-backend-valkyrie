@@ -214,7 +214,7 @@ Required fields: `email`, `password`
 
 ### Registration:
 
-`POST /api/users`
+`POST /api/users/register`
 
 Example request body:
 
@@ -237,6 +237,12 @@ Required fields: `email`, `username`, `password`
 `GET /api/user`
 
 Authentication required, returns a User that's the current user
+
+### Get List of Users
+
+`GET /api/users`
+
+Authentication required, returns a list of Users plus their profiles.
 
 ### Update User
 

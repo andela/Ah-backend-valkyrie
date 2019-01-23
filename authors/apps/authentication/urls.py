@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (
     LoginAPIView, RegistrationAPIView, UserRetrieveUpdateAPIView,
-    UserAccountVerificationAPIView,UsersListAPIView
+    UserAccountVerificationAPIView,UsersListAPIView,
 )
 
 urlpatterns = [
@@ -13,7 +13,7 @@ urlpatterns = [
     ),
     path(
         'users/register', 
-        RegistrationAPIView.as_view(), 
+        RegistrationAPIView.as_view(),
         name='user-registration'),
     path(
         'users/login/',
