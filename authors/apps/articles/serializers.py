@@ -32,6 +32,8 @@ class TagRelatedField(serializers.RelatedField):
         """
         return value.tag
 
+from .models import Article, FavoriteArticle
+
 
 class ArticleSerializer(serializers.ModelSerializer):
 
@@ -48,6 +50,8 @@ class ArticleSerializer(serializers.ModelSerializer):
             'createdAt',
             'updatedAt',
             'author',
+            'favorited',
+            'favorites_count',
         )
         model = Article
         read_only_fields = ('author',)
@@ -61,3 +65,12 @@ class ArticleSerializer(serializers.ModelSerializer):
             article.tagList.add(tag_obj)
 
         return article
+
+class FavoriteArticleSerializer(serializers.ModelSerializer):
+        article = ArticleSerializer(required=False)
+        class Meta:
+            fields = ( 
+            'id' ,     
+            'article',
+            )
+            model = FavoriteArticle

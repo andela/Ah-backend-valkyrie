@@ -95,9 +95,6 @@ env/
 
 # SQLite3
 db.sqlite3
-authors/apps/authentication/social_auth/__pycache__/*.pyc
-authors/apps/authentication/tests/__pycache__/*.pyc
 
 #VS code
 *.vscode
-

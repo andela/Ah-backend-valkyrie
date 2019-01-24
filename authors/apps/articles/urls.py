@@ -7,6 +7,9 @@ from .views import (
     ListTag
 )
 
+from .views import (ListCreateArticle,
+                    RetrieveUpdateDestroyArticle, RetrieveAuthorArticles, FavoriteArticlesView, UnfavoriteArticleView)
+
 app_name = "articles"
 urlpatterns = [
     path(
@@ -29,4 +32,14 @@ urlpatterns = [
         ListTag.as_view(),
         name="tags_list"
     ),
+    path(
+            '<slug:slug>/favorite', 
+            FavoriteArticlesView.as_view(), 
+            name="favorite-articles"
+        ), 
+    path(
+            '<slug:slug>/favorite/<int:pk>/', 
+            UnfavoriteArticleView.as_view(), 
+            name="unfavorite-articles"
+        )
 ]
