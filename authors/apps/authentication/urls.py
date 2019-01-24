@@ -4,6 +4,10 @@ from .views import (
     LoginAPIView, RegistrationAPIView, UserRetrieveUpdateAPIView,
     UserAccountVerificationAPIView
     UserAccountVerificationAPIView,UsersListAPIView
+    LoginAPIView, RegistrationAPIView, UserRetrieveUpdateAPIView, 
+    UserAccountVerificationAPIView
+    LoginAPIView, RegistrationAPIView, UserRetrieveUpdateAPIView,
+    UserAccountVerificationAPIView,UsersListAPIView
 )
 
 urlpatterns = [
@@ -15,6 +19,8 @@ urlpatterns = [
     path(
         'users/register',
         RegistrationAPIView.as_view(),
+        'users/register', 
+        'users/', 
         'users/register', 
         RegistrationAPIView.as_view(), 
         name='user-registration'),
