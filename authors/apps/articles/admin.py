@@ -6,9 +6,6 @@ class ArticleImageInline(admin.TabularInline):
     model = ArticleImage
     extra = 3
 
-# class TagInline(admin.TabularInline):
-#     model = Tag
-#     extra = 3
 
 class ArticleAdmin(admin.ModelAdmin):
     inlines = [ ArticleImageInline ]
