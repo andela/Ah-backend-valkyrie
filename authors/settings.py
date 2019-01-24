@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'authors.apps.authentication',
     'authors.apps.core',
     'authors.apps.profiles',
+    'rest_framework.authtoken',
     'authors.apps.articles',
 ]
 
@@ -87,6 +88,7 @@ WSGI_APPLICATION = 'authors.wsgi.application'
 # Database
 # Postgresql db engine selected.
 
+# 
 DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL')
@@ -135,6 +137,9 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:4000',
 )
 
+FACEBOOK_APP_ID = '282774432595037'
+FACEBOOK_APP_SECRET = '6690f47e6f7eff6390053a440066d661'
+
 # Tell Django about the custom `User` model we created. The string
 # `authentication.User` tells Django we are referring to the `User` model in
 # the `authentication` module. This module is registered above in a setting
@@ -147,8 +152,19 @@ REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'authors.apps.authentication.backends.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer'
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
 }
+
 
 # Django nose test runner settings
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

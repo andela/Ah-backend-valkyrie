@@ -5,6 +5,13 @@ from django.db import models
 from authors.apps.authentication.serializers import UserSerializer
 from .models import Article, LikeArticle
 
+from rest_framework import serializers
+from django.db import models
+
+from authors.apps.authentication.serializers import UserSerializer
+from .models import Article
+
+
 class ArticleSerializer(serializers.ModelSerializer):
     author = serializers.PrimaryKeyRelatedField(
         read_only=True, default=serializers.CurrentUserDefault()

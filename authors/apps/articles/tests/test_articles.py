@@ -1,5 +1,6 @@
 from django.test import TestCase
 from rest_framework.reverse import reverse
+from  rest_framework.reverse import reverse
 from rest_framework import status
 
 from authors.apps.authentication.tests.base import BaseTestMethods
@@ -30,7 +31,7 @@ class ArticleTestCase(BaseTestMethods):
         request = self.client.get(author_articles)
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.data), 0)
-        self.assertEqual(request.data[0]['author'], author_id)
+        self.assertEqual(request.data['results'][0]['author'], author_id)
 
     def test_user_creates_article(self):
         url = reverse(self.get_post_article_url)
@@ -138,7 +139,6 @@ class ArticleTestCase(BaseTestMethods):
 def get_user_token(self):
     user = self.register_and_loginUser()
     return user.data['token']
-
 
 def get_user2_token(self):
     user = self.register_and_login_user2()

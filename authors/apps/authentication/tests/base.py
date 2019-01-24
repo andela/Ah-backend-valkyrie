@@ -65,7 +65,6 @@ class BaseTestMethods(APITestCase):
         }
 
         response = self.client.post(url, data=data, format='json')
-
         return response
 
     def register_and_loginUser(self):
@@ -142,6 +141,32 @@ class BaseTestMethods(APITestCase):
         return self.client.get(
             reverse(
                 'user-account-verification',
+                args=(token, user_email)
+            ), format="json"
+        )
+
+    def get_user2_acccount_verification_email(self):
+            user_data = {
+                'user': {
+                    'email': self.user['user2']['email'], 
+                    'password': self.user['user2']['password'],
+                    'username': self.user['user2']['username']
+                }
+            }
+            self.create_user(user_data)
+            return mail.outbox
+
+    def verify_registered_user2_account(self):
+        sent_email = self.get_user2_acccount_verification_email()
+        msg = sent_email[1]
+        url = (msg.body)[176:]
+        splited_url = url.split('/')
+        token = splited_url[7]
+        user_email = splited_url[8]
+
+        return self.client.get(
+            reverse(
+                'user-account-verification', 
                 args=(token, user_email)
             ), format="json"
         )
