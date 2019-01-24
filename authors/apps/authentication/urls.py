@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+
     LoginAPIView, RegistrationAPIView, UserRetrieveUpdateAPIView,
     UserAccountVerificationAPIView,UsersListAPIView
 )
@@ -12,6 +13,7 @@ urlpatterns = [
         name='update-retrieve-user'
     ),
     path(
+
         'users/register', 
         RegistrationAPIView.as_view(), 
         name='user-registration'),
