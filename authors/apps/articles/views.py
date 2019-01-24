@@ -4,12 +4,14 @@ from rest_framework.response import Response
 from rest_framework.exceptions import NotAcceptable
 from django.http import Http404
 from django.contrib.auth import get_user_model
+from rest_framework.filters import SearchFilter
 
 from . import models
 from .models import Article, FavoriteArticle
 from . import serializers
 from .renderers import ArticleJSONRenderer
 from authors.apps.core import authority
+from .search import ArticleFilter
 
 
 class ListCreateArticle(generics.ListCreateAPIView):
@@ -111,3 +113,24 @@ class UnfavoriteArticleView(generics.DestroyAPIView):
                      
                 }
                 )
+
+
+class ArticleSearchListAPIView(generics.ListAPIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = serializers.ArticleSerializer
+    filter_class = ArticleFilter
+    filter_backends = (SearchFilter,)
+    search_fields = ('title', 'description', 'body', 'author__username', 'tagList__tag')
+
+    def get_queryset(self):
+        queryset = models.Article.objects.all()
+        search_key = self.request.query_params.get('search_key', None)
+        search_term = self.request.query_params.get('search', None)
+        
+        if search_key == 'author':
+            queryset = queryset.filter(author__username__icontains=search_term)
+        if search_key == 'title':
+            queryset = queryset.filter(title__icontains=search_term)
+        if search_key == 'tag':
+            queryset = queryset.filter(tagList__tag__icontains=search_term)
+        return queryset

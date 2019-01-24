@@ -421,5 +421,17 @@ No additional parameters required
 
 `GET /api/tags`
 
+### Search Article
 
+#### Search by Key word
 
+`GET /api/v1/articles/search?search=search+word+here`
+
+#### Search by Tag
+`GET /api/v1/articles/search?search=tag+here&search_key=tag`
+
+#### Search by Author
+`GET /api/v1/articles/search?search=author+name+here&search_key=author`
+
+#### Search by Title
+`GET /api/v1/articles/search?search=title+here&search_key=title`

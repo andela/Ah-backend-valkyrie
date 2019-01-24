@@ -8,7 +8,12 @@ from .views import (
 )
 
 from .views import (ListCreateArticle,
-                    RetrieveUpdateDestroyArticle, RetrieveAuthorArticles, FavoriteArticlesView, UnfavoriteArticleView)
+    RetrieveUpdateDestroyArticle,
+    RetrieveAuthorArticles,
+    FavoriteArticlesView,
+    UnfavoriteArticleView,
+    ArticleSearchListAPIView
+)
 
 app_name = "articles"
 urlpatterns = [
@@ -41,5 +46,10 @@ urlpatterns = [
             '<slug:slug>/favorite/<int:pk>/', 
             UnfavoriteArticleView.as_view(), 
             name="unfavorite-articles"
-        )
+        ),
+    path(
+        'search',
+        ArticleSearchListAPIView.as_view(),
+        name="search-article"
+    )
 ]
