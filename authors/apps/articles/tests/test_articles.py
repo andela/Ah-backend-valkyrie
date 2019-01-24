@@ -135,6 +135,17 @@ class ArticleTestCase(BaseTestMethods):
             "You do not have permission to perform this action."
         )
 
+    def test_tagging_for_articles(self):
+        url = reverse(self.get_post_article_url)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self
+        ))
+        self.article['tagList'] = ["Tag1", "Tag2", "Tag3"]
+        request = self.client.post(url, data=self.article, format='json')
+        self.assertEqual(request.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(request.data['tagList'], ["Tag1", "Tag2", "Tag3"])
+
+
 def get_user_token(self):
     user = self.register_and_loginUser()
     return user.data['token']
