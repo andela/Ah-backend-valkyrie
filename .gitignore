@@ -97,6 +97,3 @@ db.sqlite3
 
 #VS code
 *.vscode
-
-#Ignore app migrations folder
-migrations/
