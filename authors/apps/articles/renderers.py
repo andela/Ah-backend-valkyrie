@@ -15,12 +15,6 @@ class ArticleJSONRenderer(JSONRenderer):
             return json.dumps({
                 'article': data
             })
-
             
         except Exception as identifier:
             pass
-
-        
-        
-
-        
