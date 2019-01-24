@@ -36,7 +36,6 @@ class TagRelatedField(serializers.RelatedField):
 class ArticleSerializer(serializers.ModelSerializer):
 
     author = UserSerializer(required=False)
-    # author = ProfileSerializer(read_only=True)
     tagList = TagRelatedField(many=True, required=False)
 
     class Meta:
