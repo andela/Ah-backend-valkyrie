@@ -50,6 +50,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             'description',
             'body',
             'tagList',
+            'average_rating',
             'createdAt',
             'updatedAt',
             'author',
@@ -82,16 +83,16 @@ class FavoriteArticleSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'article',
-            )
+        )
         model = FavoriteArticle
 
 
 class BookmarkSerializer(serializers.ModelSerializer):
     article = ArticleSerializer(required=False)
- 
+
     class Meta:
-        fields =(
+        fields = (
             'id',
             'article',
-        )            
+        )
         model = BookmarkArticle

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'authors.apps.articles',
     'authors.apps.comments',
+    'authors.apps.ratings',
 ]
 
 MIDDLEWARE = [
@@ -91,7 +92,7 @@ WSGI_APPLICATION = 'authors.wsgi.application'
 # Database
 # Postgresql db engine selected.
 
-# 
+#
 DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL')
@@ -185,7 +186,7 @@ NOSE_ARGS = [
     '--verbosity=3'
 ]
 
-#Email Settings
+# Email Settings
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')

@@ -36,6 +36,7 @@ class ArticleTestCase(BaseTestMethods):
         url = reverse(self.get_post_article_url)
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + self.get_user_token())
+
         request = self.client.post(url, data=self.article, format='json')
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         self.assertEqual(request.data['title'], "Test article today")
@@ -78,10 +79,11 @@ class ArticleTestCase(BaseTestMethods):
         self.assertEqual(request.data['title'], "Test article yesterday")
 
     def test_update_article_by_invalid_author(self):
+
         # create article with first user
         response = self.create_article()
         article_slug = response.data['slug']
-        
+
         # create second user and update first user's article
         user2_token = self.get_user2_token()
         self.client.credentials(
@@ -113,7 +115,7 @@ class ArticleTestCase(BaseTestMethods):
         # create article with first user
         response = self.create_article()
         article_slug = response.data['slug']
-        
+
         # create second user and delete first user's article
         user2 = self.get_user2_token()
         self.client.credentials(
@@ -126,3 +128,157 @@ class ArticleTestCase(BaseTestMethods):
             request.data['detail'],
             "You do not have permission to perform this action."
         )
+    # test favorite article
+
+    def test_favorite_article(self):
+        # create an article
+        url = reverse("articles:articles_list")
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        request = self.client.post(url, data=self.article, format='json')
+        article_slug = request.data['slug']
+
+        # user favorites an article
+        url = reverse("articles:favorite-articles", args=[article_slug])
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user2_token(self)
+        )
+        response = self.client.post(url, format='json')
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            response.data['article']['slug'],
+            "test-article-today"
+        )
+
+    def test_tagging_for_articles(self):
+        url = reverse(self.get_post_article_url)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self
+                                                          ))
+        self.article['tagList'] = ["Tag1", "Tag2", "Tag3"]
+        request = self.client.post(url, data=self.article, format='json')
+        self.assertEqual(request.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(request.data['tagList'], ["Tag1", "Tag2", "Tag3"])
+
+    def test_updating_tags_for_articles(self):
+        url = reverse("articles:articles_list")
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        request = self.client.post(url, data=self.article, format='json')
+        article_slug = request.data['slug']
+        self.article['tagList'] = ["Tag1", "Tag2"]
+        update_url = reverse(self.single_article_url, args=[article_slug])
+        request = self.client.put(update_url, data=self.article, format='json')
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
+        self.assertEqual(request.data['tagList'], ["Tag1", "Tag2"])
+
+    def test_creating_duplicate_tags(self):
+        url = reverse(self.get_post_article_url)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        self.article['tagList'] = ["Tag1"]
+        self.client.post(url, data=self.article, format='json')
+        request = self.client.post(url, data=self.article, format='json')
+
+        tag_url = reverse(self.get_tags_url)
+        tag_request = self.client.get(tag_url)
+        self.assertEqual(tag_request.status_code, 200)
+        self.assertEqual(len(tag_request.data), 1)
+
+        # test user cannot favorite his/her own article
+    def test_user_cannot_favorite_own_article(self):
+        # create article
+        url = reverse("articles:articles_list")
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        request = self.client.post(url, data=self.article, format='json')
+        article_slug = request.data['slug']
+
+        # favorite your article
+        url = reverse("articles:favorite-articles", args=[article_slug])
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_406_NOT_ACCEPTABLE)
+        print(response.data)
+        self.assertEqual(
+            response.data['detail'],
+            "You are not allowed to favorite your own article"
+        )
+
+    def test_user_cannot_favorite_article_again(self):
+        # create article
+        url = reverse("articles:articles_list")
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        request = self.client.post(url, data=self.article, format='json')
+        article_slug = request.data['slug']
+
+        # user favorites article
+        url = reverse("articles:favorite-articles", args=[article_slug])
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user2_token(self)
+        )
+        response = self.client.post(url, format='json')
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # user favorites article again
+        url = reverse("articles:favorite-articles", args=[article_slug])
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user2_token(self)
+        )
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_406_NOT_ACCEPTABLE)
+        self.assertEqual(
+            response.data['detail'],
+            "Article already favorited by you"
+        )
+
+    def test_unfavorite_article(self):
+        # create an article
+        url = reverse("articles:articles_list")
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        request = self.client.post(url, data=self.article, format='json')
+        article_slug = request.data['slug']
+
+        # Favorite an article
+        url = reverse("articles:favorite-articles", args=[article_slug])
+        print(url)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user2_token(self)
+        )
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        favorite_id = response.data['id']
+
+        # Unfavorite article
+        url = reverse(
+            "articles:unfavorite-articles",
+            args=[article_slug, favorite_id]
+        )
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user2_token(self)
+        )
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['status'], "unfavorited")
+
+
+def get_user_token(self):
+    user = self.register_and_loginUser()
+    return user.data['token']
+
+
+def get_user2_token(self):
+    user = self.register_and_login_user2()
+    return user.data['token']

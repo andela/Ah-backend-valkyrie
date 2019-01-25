@@ -5,6 +5,9 @@ from django.template.defaultfilters import slugify
 from .helper import FavoriteHelper
 from django_currentuser.middleware import get_current_user
 
+from authors.apps.ratings.utils import fetch_rating_average
+from authors.apps.ratings.models import Rating
+
 
 class Tag(models.Model):
     tag = models.CharField(max_length=50)
@@ -17,7 +20,7 @@ class Tag(models.Model):
 
 class Article(models.Model):
     favorite_helper = FavoriteHelper()
-    
+
     title = models.CharField(max_length=100)
     slug = models.SlugField(null=True)
     description = models.CharField(max_length=300)
@@ -29,7 +32,11 @@ class Article(models.Model):
         get_user_model(),
         on_delete=models.CASCADE, null=False
     )
-    
+
+    @property
+    def average_rating(self):
+        return fetch_rating_average(Rating, self.pk).get('points__avg')
+
     def __str__(self):
         return self.title
 
@@ -38,13 +45,13 @@ class Article(models.Model):
             self.slug = slugify(self.title)
             while Article.objects.filter(slug=self.slug).exists():
                 article_pk = Article.objects.latest('pk').pk + 1
-                self.slug = f'{self.slug}-{article_pk}'            
+                self.slug = f'{self.slug}-{article_pk}'
 
         super(Article, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ('createdAt',)
-    
+
     @property
     def favorited(self):
         return self.favorite_helper.is_favorited(
@@ -53,13 +60,13 @@ class Article(models.Model):
             user_id=get_current_user().id
         )
 
-
-    @property 
+    @property
     def favorites_count(self):
         return self.favorite_helper.favorite_count(
             model=FavoriteArticle,
             article_id=self.pk
         )
+
 
 class ArticleImage(models.Model):
     article = models.ForeignKey(
@@ -69,23 +76,22 @@ class ArticleImage(models.Model):
     )
     image = models.ImageField()
 
+
 class FavoriteArticle(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, null=True)
     author = models.ForeignKey(
-        get_user_model(), 
+        get_user_model(),
         on_delete=models.CASCADE, null=True
     )
     Timestamp = models.DateTimeField(auto_now=True)
-  
 
     def __str__(self):
         return self.article
 
+
 class BookmarkArticle(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, null=True)
     user = models.ForeignKey(
-           get_user_model(), on_delete=models.CASCADE,
-          null=True
+        get_user_model(), on_delete=models.CASCADE,
+        null=True
     )
-
-     
