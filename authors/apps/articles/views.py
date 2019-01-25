@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.exceptions import NotAcceptable
 from django.http import Http404
+from django.contrib.auth import get_user_model
 
 from . import models
 from .models import Article, FavoriteArticle
@@ -64,7 +65,6 @@ class ListTag(generics.ListAPIView):
         return Response({
             "tags": serializer.data
         })
-	    return self.queryset.filter(author_id=self.kwargs.get('pk'))
 
 
 class FavoriteArticlesView(generics.CreateAPIView):

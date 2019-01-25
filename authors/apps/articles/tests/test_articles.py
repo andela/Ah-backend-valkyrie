@@ -108,9 +108,8 @@ class ArticleTestCase(BaseTestMethods):
         )
         request = self.client.post(url, data=self.article, format='json')
         article_slug = request.data['slug']
+        
         delete_url = reverse(self.single_article_url, args=[article_slug])
-        request = self.client.delete(delete_url, data=self.article, format='json')
-        pprint(request.data)
         request = self.client.delete(
             delete_url, 
             data=self.article, 
