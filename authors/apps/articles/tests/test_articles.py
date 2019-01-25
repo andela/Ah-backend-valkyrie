@@ -1,7 +1,6 @@
 from django.test import TestCase
 from rest_framework.reverse import reverse
 from rest_framework import status
-from pprint import pprint
 
 from authors.apps.authentication.tests.base import BaseTestMethods
 from authors.apps.articles.models import Article
