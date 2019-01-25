@@ -1,5 +1,7 @@
+import jwt
+
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, GenericAPIView
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -13,12 +15,13 @@ from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer
 )
 from authors.apps.core.email_handler import email_template
+from .models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.urls import reverse
-from .models import User
+from django.conf import settings
 
 
 class RegistrationAPIView(APIView):
@@ -162,3 +165,76 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserPasswordResetRequestAPIView(GenericAPIView):
+    permission_classes = (AllowAny,)
+    renderer_classes = (UserJSONRenderer,)
+    serializer_class = UserSerializer
+
+    def post(self, request, **kwargs):
+        """reset password email template"""
+        email = request.data.get('email')
+        protocol = 'https://' if request.is_secure() else 'http://'
+        current_site = get_current_site(request)
+
+        if not email:
+            message = {'message': 'An email address is required'}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.fetch_user(email)
+
+        if not user:
+            message = {
+                'message': 'User with email {} doesnot exist'.format(email)}
+            return Response(message, status=status.HTTP_404_NOT_FOUND)
+
+        # Ensure that you send a reset mail to a valid user
+        token = JWTAuthentication.generate_password_reset_token(email)
+
+        reset_url = protocol + current_site.domain + reverse(
+            'reset_password_confirm',
+            kwargs={"token": token}
+        )
+        subject, to = ('Valkyrie-Authors-Haven Password Reset', email)
+
+        html_content = "<p>Click on this <a href='" + \
+            reset_url + "'>Link<a> to reset your password</p> " + reset_url
+
+        email_template(subject, html_content, to)
+
+        return Response(
+            {
+                "message":
+                "A password reset email has been sent to your email account!"},
+            status=status.HTTP_200_OK)
+
+
+class UserPasswordResetConfirmAPIView(GenericAPIView):
+    permission_classes = (AllowAny,)
+    renderer_classes = (UserJSONRenderer,)
+    serializer_class = UserSerializer
+
+    def put(self, request, token):
+        """update user password"""
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY)
+
+        except Exception as error:
+            return Response(
+                {'message': str(error)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user = User.fetch_user(payload['email'])
+        password = request.data.get('password')
+
+        serializer = self.serializer_class(
+            request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        user.set_password(password)
+        user.save()
+
+        return Response(
+            {"message": "Password reset successful!"},
+            status=status.HTTP_200_OK)

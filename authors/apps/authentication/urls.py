@@ -33,4 +33,12 @@ urlpatterns = [
         UserAccountVerificationAPIView.as_view(), 
         name='user-account-verification'
     ),
+    path(
+        'users/reset_password_confirm/<str:token>',
+        UserPasswordResetConfirmAPIView.as_view(),
+        name='reset_password_confirm'),
+    path(
+        'users/reset_password',
+        UserPasswordResetRequestAPIView.as_view(),
+        name='reset_password'),
 ]
