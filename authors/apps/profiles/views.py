@@ -83,6 +83,6 @@ class ProfileFollowingAPIView(generics.ListAPIView):
     serializer_class = ProfileSerializer
 
     def list(self, request):
-        followings = self.request.user.profile.follows.all()
+        followings = self.request.user.profile.following.all()
         serializer = ProfileSerializer(followings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
