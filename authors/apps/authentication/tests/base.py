@@ -41,6 +41,7 @@ class BaseTestMethods(APITestCase):
         self.get_post_article_url = "articles:articles_list"
         self.single_article_url = "articles:article_detail"
         self.get_author_articles = "articles:author_articles"
+        self.get_tags_url = "articles:tags_list"
         
     def create_user(self, data):
         """
