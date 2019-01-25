@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.db import models
 
 from authors.apps.authentication.serializers import UserSerializer
-from .models import Article
+from .models import Article, FavoriteArticle
 
 
 class ArticleSerializer(serializers.ModelSerializer):
@@ -19,6 +19,18 @@ class ArticleSerializer(serializers.ModelSerializer):
             'createdAt',
             'updatedAt',
             'author',
+            'favorited',
+            'favorites_count',
         )
         model = Article
         read_only_fields = ('author',)
+
+
+class FavoriteArticleSerializer(serializers.ModelSerializer):
+        article = ArticleSerializer(required=False)
+        class Meta:
+            fields = ( 
+            'id' ,     
+            'article',
+            )
+            model = FavoriteArticle

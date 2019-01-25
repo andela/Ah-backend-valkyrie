@@ -32,3 +32,8 @@ whitenoise
 wrapt
 Pillow
 python-twitter
+facebook-sdk
+google-auth-httplib2
+google-auth-oauthlib
+google-auth
+django_currentuser

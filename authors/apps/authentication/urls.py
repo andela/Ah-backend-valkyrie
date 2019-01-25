@@ -1,8 +1,10 @@
 from django.urls import path
 
 from .views import (
+
     LoginAPIView, RegistrationAPIView, UserRetrieveUpdateAPIView,
-    UserAccountVerificationAPIView,UsersListAPIView
+    UserAccountVerificationAPIView, UserPasswordResetConfirmAPIView,
+    UserPasswordResetRequestAPIView, UsersListAPIView
 )
 
 urlpatterns = [
@@ -12,6 +14,7 @@ urlpatterns = [
         name='update-retrieve-user'
     ),
     path(
+
         'users/register', 
         RegistrationAPIView.as_view(), 
         name='user-registration'),
@@ -29,4 +32,12 @@ urlpatterns = [
         UserAccountVerificationAPIView.as_view(), 
         name='user-account-verification'
     ),
+    path(
+        'users/reset_password_confirm/<str:token>',
+        UserPasswordResetConfirmAPIView.as_view(),
+        name='reset_password_confirm'),
+    path(
+        'users/reset_password',
+        UserPasswordResetRequestAPIView.as_view(),
+        name='reset_password'),
 ]
