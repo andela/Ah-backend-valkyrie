@@ -26,7 +26,6 @@ var/
 .idea/
 .env
 htmlcov/
-*migrations/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
