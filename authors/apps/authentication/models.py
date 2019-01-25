@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from datetime import datetime, timedelta
 from django.core import validators
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin
 )
@@ -166,6 +167,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         }
         return self.jwt_helper_class.generate_token(payload)
 
+    @classmethod
+    def fetch_user(cls, email):
+        return get_object_or_404(cls, email=email)
+
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     Token.objects.get_or_create(user=instance)
+
