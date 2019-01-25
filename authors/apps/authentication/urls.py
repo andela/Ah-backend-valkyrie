@@ -4,7 +4,9 @@ from .views import (
     LoginAPIView,
     RegistrationAPIView,
     UserRetrieveUpdateAPIView,
-    UserAccountVerificationAPIView,
+	UserAccountVerificationAPIView,
+    UserPasswordResetConfirmAPIView,
+	UserPasswordResetRequestAPIView,
     UsersListAPIView,
 )
 
