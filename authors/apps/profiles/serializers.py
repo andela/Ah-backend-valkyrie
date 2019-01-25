@@ -10,6 +10,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     country = serializers.CharField(allow_blank=True, required=False)
     bio = serializers.CharField(allow_blank=True, required=False)
     image = serializers.SerializerMethodField()
+    following = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
@@ -22,3 +23,11 @@ class ProfileSerializer(serializers.ModelSerializer):
             return obj.image
 
         return 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
+
+    def get_following(self, instance):
+        request = self.context.get('request', None)
+        if request is None:
+            return False
+        follower = request.user.profile
+        followee = instance
+        return follower.is_following(followee)
