@@ -1,3 +1,5 @@
+import readtime
+import json
 from rest_framework import serializers
 from django.db import models
 from django.template.defaultfilters import slugify
@@ -37,6 +39,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     author = UserSerializer(required=False)
     tagList = TagRelatedField(many=True, required=False)
+    read_time = serializers.SerializerMethodField()
 
     class Meta:
         fields = (
@@ -50,6 +53,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             'author',
             'favorited',
             'favorites_count',
+            'read_time'
         )
         model = Article
         read_only_fields = ('author',)
@@ -62,12 +66,17 @@ class ArticleSerializer(serializers.ModelSerializer):
             article.tagList.add(tag_obj)
 
         return article
+    def get_read_time(self, instance):
+        post = instance.body
+        return str(readtime.of_text(post))
+
 
 class FavoriteArticleSerializer(serializers.ModelSerializer):
-        article = ArticleSerializer(required=False)
-        class Meta:
-            fields = ( 
-            'id' ,     
+    article = ArticleSerializer(required=False)
+
+    class Meta:
+        fields = (
+            'id',
             'article',
-            )
-            model = FavoriteArticle
+        )
+        model = FavoriteArticle

@@ -38,3 +38,4 @@ google-auth-oauthlib
 google-auth
 django_currentuser
 django-filter
+readtime
