@@ -36,9 +36,15 @@ class TagRelatedField(serializers.RelatedField):
 
 
 class ArticleSerializer(serializers.ModelSerializer):
+<<<<<<< HEAD
 
     author = UserSerializer(required=False)
     tagList = TagRelatedField(many=True, required=False)
+=======
+    author = serializers.PrimaryKeyRelatedField(
+        read_only=True, default=serializers.CurrentUserDefault()
+    )
+>>>>>>> Resolve test issues
     read_time = serializers.SerializerMethodField()
 
     class Meta:
@@ -58,6 +64,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         read_only_fields = ('author',)
 
+<<<<<<< HEAD
     def create(self, validated_data):
         tagList = validated_data.pop('tagList')
         article = Article.objects.create(**validated_data)
@@ -66,6 +73,8 @@ class ArticleSerializer(serializers.ModelSerializer):
             article.tagList.add(tag_obj)
 
         return article
+=======
+>>>>>>> Resolve test issues
     def get_read_time(self, instance):
         post = instance.body
         return str(readtime.of_text(post))
