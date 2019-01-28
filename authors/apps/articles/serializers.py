@@ -5,7 +5,7 @@ from rest_framework import status
 
 from authors.apps.authentication.serializers import UserSerializer
 from authors.apps.profiles.serializers import ProfileSerializer
-from .models import Article, Tag
+from .models import Article, Tag, FavoriteArticle
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -24,15 +24,13 @@ class TagRelatedField(serializers.RelatedField):
     def to_internal_value(self, data):
         tag = Tag.objects.get_or_create(tag=data, slug=slugify(data))
 
-        return tag[0].id
+        return tag[0]
 
     def to_representation(self, value):
         """
         Serialize tagged objects to a simple textual representation.
         """
         return value.tag
-
-from .models import Article, FavoriteArticle
 
 
 class ArticleSerializer(serializers.ModelSerializer):
@@ -57,11 +55,10 @@ class ArticleSerializer(serializers.ModelSerializer):
         read_only_fields = ('author',)
 
     def create(self, validated_data):
-        tag = validated_data['tagList']
         tagList = validated_data.pop('tagList')
         article = Article.objects.create(**validated_data)
         for tag in tagList:
-            tag_obj = Tag.objects.get(id=tag) 
+            tag_obj = Tag.objects.get(id=tag.id) 
             article.tagList.add(tag_obj)
 
         return article
