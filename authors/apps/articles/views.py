@@ -22,14 +22,6 @@ class ListCreateArticle(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = serializers.ArticleSerializer(queryset, many=True)
-        return Response({
-            "articles": serializer.data,
-            "articlesCount": len(serializer.data)
-        })
-
 
 class RetrieveUpdateDestroyArticle(generics.RetrieveUpdateDestroyAPIView):
     renderer_classes = (ArticleJSONRenderer,)
