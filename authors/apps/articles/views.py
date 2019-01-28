@@ -12,7 +12,6 @@ from django.urls import reverse
 from authors.apps.profiles.models import Profile
 from django_social_share.templatetags import social_share
 
-
 from . import models
 from .models import Article, FavoriteArticle, BookmarkArticle
 from . import serializers
@@ -22,7 +21,6 @@ from .search import ArticleFilter
 from authors.apps.articles.pagination import ArticlePagination
 from .search import ArticleFilter
 from authors.apps.articles.pagination import ArticlePagination
-
 
 class ListCreateArticle(generics.ListCreateAPIView):
     queryset = models.Article.objects.all()
@@ -46,6 +44,19 @@ class RetrieveUpdateDestroyArticle(generics.RetrieveUpdateDestroyAPIView):
         permissions.IsAuthenticatedOrReadOnly,
         authority.IsOwnerOrReadOnly,
     )
+
+    def initial(self, request, *args, **kwargs):
+        """
+        Track reading stats
+        """
+        self.format_kwarg = self.get_format_suffix(**kwargs)
+        article = Article.objects.get(slug=self.kwargs.get('slug'))
+        author = self.request.user
+        if not request.user.is_anonymous:
+            read = models.ReadingStats.objects.update_or_create(
+                article=article,
+                author=self.request.user
+            )
 
 
 class RetrieveAuthorArticles(generics.ListAPIView):
@@ -295,3 +306,14 @@ class GetBookmarkArticle(generics.RetrieveAPIView):
         bookmark_id = self.kwargs.get('pk')
         bookmark = get_object_or_404(self.queryset, id=bookmark_id)
         return self.queryset.filter(id=bookmark_id)
+
+class ReadingStatsView(generics.ListAPIView):
+    queryset = models.ReadingStats.objects.all()
+    serializer_class = serializers.ReadingStatSerializer
+    permission_classes = (
+        permissions.IsAuthenticated,
+        authority.IsOwnerOrReadOnly,
+    )
+
+    def get_queryset(self):
+	    return self.queryset.filter(author=self.request.user)

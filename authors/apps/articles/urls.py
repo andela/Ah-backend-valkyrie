@@ -11,7 +11,8 @@ from .views import (
     BookmarkArticleView,
     UnBookmarkArticleView,
     GetBookmarkArticle,
-    ShareArticleView
+    ShareArticleView,
+    ReadingStatsView,
 )
 
 
@@ -71,5 +72,10 @@ urlpatterns = [
         '<slug:slug>/share/<str:provider>/',
         ShareArticleView.as_view(),
         name="share-article"
+    ),
+    path(
+        'stats', 
+        ReadingStatsView.as_view(), 
+        name="reading-stats"
     ),
 ]
