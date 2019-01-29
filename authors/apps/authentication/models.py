@@ -114,6 +114,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         managed = True
         abstract = False
+        db_table = 'auth_user'
 
     def __str__(self):
         """
