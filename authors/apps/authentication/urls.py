@@ -1,10 +1,13 @@
 from django.urls import path
 
 from .views import (
-
-    LoginAPIView, RegistrationAPIView, UserRetrieveUpdateAPIView,
-    UserAccountVerificationAPIView, UserPasswordResetConfirmAPIView,
-    UserPasswordResetRequestAPIView, UsersListAPIView
+    LoginAPIView,
+    RegistrationAPIView,
+    UserRetrieveUpdateAPIView,
+	UserAccountVerificationAPIView,
+    UserPasswordResetConfirmAPIView,
+	UserPasswordResetRequestAPIView,
+    UsersListAPIView,
 )
 
 urlpatterns = [

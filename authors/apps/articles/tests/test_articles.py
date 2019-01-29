@@ -1,5 +1,5 @@
 from django.test import TestCase
-from  rest_framework.reverse import reverse
+from rest_framework.reverse import reverse
 from rest_framework import status
 
 from authors.apps.authentication.tests.base import BaseTestMethods
@@ -24,12 +24,12 @@ class ArticleTestCase(BaseTestMethods):
         ))
         url = reverse(self.get_post_article_url)
         request = self.client.post(url, data=self.article, format='json')
-        author_id = request.data['author']
+        author_id = request.data['author']['username']
         author_articles = reverse(self.get_author_articles, args=[author_id])
         request = self.client.get(author_articles)
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.data), 0)
-        self.assertEqual(request.data['results'][0]['author'], author_id)
+        self.assertEqual(request.data['results'][0]['author']['username'], author_id)
 
     def test_user_creates_article(self):
         url = reverse(self.get_post_article_url)
@@ -107,6 +107,7 @@ class ArticleTestCase(BaseTestMethods):
         )
         request = self.client.post(url, data=self.article, format='json')
         article_slug = request.data['slug']
+        
         delete_url = reverse(self.single_article_url, args=[article_slug])
         request = self.client.delete(
             delete_url, 
@@ -158,6 +159,43 @@ class ArticleTestCase(BaseTestMethods):
             response.data['article']['slug'], 
             "test-article-today"
         )
+
+    def test_tagging_for_articles(self):
+        url = reverse(self.get_post_article_url)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self
+        ))
+        self.article['tagList'] = ["Tag1", "Tag2", "Tag3"]
+        request = self.client.post(url, data=self.article, format='json')
+        self.assertEqual(request.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(request.data['tagList'], ["Tag1", "Tag2", "Tag3"])
+
+    def test_updating_tags_for_articles(self):
+        url = reverse("articles:articles_list")
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        request = self.client.post(url, data=self.article, format='json')
+        article_slug = request.data['slug']
+        self.article['tagList'] = ["Tag1", "Tag2"]
+        update_url = reverse(self.single_article_url, args=[article_slug])
+        request = self.client.put(update_url, data=self.article, format='json')  
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
+        self.assertEqual(request.data['tagList'], ["Tag1", "Tag2"])
+
+    def test_creating_duplicate_tags(self):
+        url = reverse(self.get_post_article_url)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
+        )
+        self.article['tagList'] = ["Tag1"]
+        self.client.post(url, data=self.article, format='json')
+        request = self.client.post(url, data=self.article, format='json')
+
+        tag_url = reverse(self.get_tags_url)
+        tag_request = self.client.get(tag_url)
+        self.assertEqual(tag_request.status_code, 200)
+        self.assertEqual(len(tag_request.data), 1)
 
         #test user cannot favorite his/her own article  
     def test_user_cannot_favorite_own_article(self):
@@ -243,6 +281,7 @@ class ArticleTestCase(BaseTestMethods):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['status'],"unfavorited")
         
+
 def get_user_token(self):
     user = self.register_and_loginUser()
     return user.data['token']
@@ -250,5 +289,3 @@ def get_user_token(self):
 def get_user2_token(self):
     user = self.register_and_login_user2()
     return user.data['token']
-
-        

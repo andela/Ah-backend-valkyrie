@@ -6,6 +6,15 @@ from .helper import FavoriteHelper
 from django_currentuser.middleware import get_current_user
 
 
+class Tag(models.Model):
+    tag = models.CharField(max_length=50)
+    slug = models.SlugField(default=tag)
+    created = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.tag
+
+
 class Article(models.Model):
     favorite_helper = FavoriteHelper()
     
@@ -13,6 +22,7 @@ class Article(models.Model):
     slug = models.SlugField(null=True)
     description = models.CharField(max_length=300)
     body = models.TextField()
+    tagList = models.ManyToManyField(Tag)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(
@@ -52,7 +62,7 @@ class Article(models.Model):
         )
 
 class ArticleImage(models.Model):
-    property = models.ForeignKey(
+    article = models.ForeignKey(
         Article,
         related_name='images',
         on_delete=models.CASCADE

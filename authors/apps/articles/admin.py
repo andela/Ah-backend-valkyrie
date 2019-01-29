@@ -1,12 +1,14 @@
 from django.contrib import admin
 
-from .models import Article, ArticleImage
+from .models import Article, ArticleImage, Tag
 
 class ArticleImageInline(admin.TabularInline):
     model = ArticleImage
     extra = 3
 
+
 class ArticleAdmin(admin.ModelAdmin):
-    inlines = [ ArticleImageInline, ]
+    inlines = [ ArticleImageInline ]
 
 admin.site.register(Article, ArticleAdmin)
+admin.site.register(Tag)

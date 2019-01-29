@@ -3,10 +3,12 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.exceptions import NotAcceptable
 from django.http import Http404
+from django.contrib.auth import get_user_model
 
 from . import models
 from .models import Article, FavoriteArticle
 from . import serializers
+from .renderers import ArticleJSONRenderer
 from authors.apps.core import authority
 
 
@@ -22,6 +24,8 @@ class ListCreateArticle(generics.ListCreateAPIView):
 
 
 class RetrieveUpdateDestroyArticle(generics.RetrieveUpdateDestroyAPIView):
+    renderer_classes = (ArticleJSONRenderer,)
+
     queryset = models.Article.objects.all()
     serializer_class = serializers.ArticleSerializer
     lookup_field = 'slug'
@@ -36,7 +40,23 @@ class RetrieveAuthorArticles(generics.ListAPIView):
     serializer_class = serializers.ArticleSerializer
 
     def get_queryset(self):
-	    return self.queryset.filter(author_id=self.kwargs.get('pk'))
+        username = self.kwargs.get('username')
+        user_id = get_user_model().objects.get(username=username)
+        return self.queryset.filter(author_id=user_id)
+
+class ListTag(generics.ListAPIView):
+    queryset = models.Tag.objects.all()
+    serializer_class = serializers.TagSerializer
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+    )
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = serializers.TagSerializer(queryset, many=True)
+        return Response({
+            "tags": serializer.data
+        })
 
 
 class FavoriteArticlesView(generics.CreateAPIView):

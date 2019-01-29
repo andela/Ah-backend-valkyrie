@@ -36,11 +36,12 @@ class BaseTestMethods(APITestCase):
             "title":"Test article today",
             "description":"Testing article creation",
             "body":"This is a lorem ipsum section.",
-            "tagList":[1]
+            "tagList":["sample"]
         }
         self.get_post_article_url = "articles:articles_list"
         self.single_article_url = "articles:article_detail"
         self.get_author_articles = "articles:author_articles"
+        self.get_tags_url = "articles:tags_list"
         
     def create_user(self, data):
         """
