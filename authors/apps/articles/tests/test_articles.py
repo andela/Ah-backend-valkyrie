@@ -51,6 +51,7 @@ class ArticleTestCase(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
         )
         self.article['body'] = ''
+        del self.article['tagList']
         request = self.client.post(url, data=self.article, format='json')
         self.assertEqual(request.status_code, status.HTTP_400_BAD_REQUEST)
 

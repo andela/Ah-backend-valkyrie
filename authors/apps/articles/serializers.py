@@ -55,7 +55,13 @@ class ArticleSerializer(serializers.ModelSerializer):
         read_only_fields = ('author',)
 
     def create(self, validated_data):
-        tagList = validated_data.pop('tagList')
+        try:
+            tagList = validated_data.pop('tagList')
+        except KeyError as identifier:
+            raise serializers.ValidationError({
+                'tagList': 'Please provide a list of tags'
+            })
+        
         article = Article.objects.create(**validated_data)
         for tag in tagList:
             tag_obj = Tag.objects.get(id=tag.id) 
