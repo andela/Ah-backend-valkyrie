@@ -178,4 +178,11 @@ class BaseTestMethods(APITestCase):
         response = self.client.post(url, format='json')
         return response
 
-    
+    def bookmark_article(self):
+        article = self.create_article()
+        article_slug = article.data['slug']
+        url = reverse("articles:bookmark-articles", args=[article_slug])
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.get_user_token())
+        response = self.client.post(url, data=self.article, format='json')    
+        return response    

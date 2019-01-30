@@ -7,7 +7,7 @@ from rest_framework import status
 
 from authors.apps.authentication.serializers import UserSerializer
 from authors.apps.profiles.serializers import ProfileSerializer
-from .models import Article, Tag, FavoriteArticle
+from .models import Article, Tag, FavoriteArticle, BookmarkArticle
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -80,5 +80,16 @@ class FavoriteArticleSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'article',
-        )
+            )
         model = FavoriteArticle
+
+
+class BookmarkSerializer(serializers.ModelSerializer):
+    article = ArticleSerializer(required=False)
+ 
+    class Meta:
+        fields =(
+            'id',
+            'article',
+        )            
+        model = BookmarkArticle

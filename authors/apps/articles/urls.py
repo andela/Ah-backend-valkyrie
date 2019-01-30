@@ -4,16 +4,15 @@ from .views import (
     ListCreateArticle,
     RetrieveUpdateDestroyArticle,
     RetrieveAuthorArticles,
-    ListTag
-)
-
-from .views import (ListCreateArticle,
-    RetrieveUpdateDestroyArticle,
-    RetrieveAuthorArticles,
+    ListTag,
     FavoriteArticlesView,
     UnfavoriteArticleView,
-    ArticleSearchListAPIView
+    ArticleSearchListAPIView,
+    BookmarkArticleView, 
+    UnBookmarkArticleView,
+    GetBookmarkArticle
 )
+
 
 app_name = "articles"
 urlpatterns = [
@@ -51,5 +50,20 @@ urlpatterns = [
         'search',
         ArticleSearchListAPIView.as_view(),
         name="search-article"
+        ), 
+    path(
+         '<slug:slug>/bookmark',
+         BookmarkArticleView.as_view(),
+         name="bookmark-articles"
+    ),   
+    path(
+        '<slug:slug>/bookmark/<int:pk>',
+        UnBookmarkArticleView.as_view(),
+        name ="unbookmark-articles"
+    ),
+    path(
+        'bookmark/<int:pk>',
+         GetBookmarkArticle.as_view(),
+        name ="get-bookmark-articles"
     )
 ]
