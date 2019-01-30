@@ -4,11 +4,11 @@ from .views import (
     ListCreateArticle,
     RetrieveUpdateDestroyArticle,
     RetrieveAuthorArticles,
-    ListTag
+    ListTag,
+    FavoriteArticlesView,
+    UnfavoriteArticleView,
 )
 
-from .views import (ListCreateArticle,
-                    RetrieveUpdateDestroyArticle, RetrieveAuthorArticles, FavoriteArticlesView, UnfavoriteArticleView)
 
 app_name = "articles"
 urlpatterns = [

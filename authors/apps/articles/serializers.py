@@ -57,17 +57,18 @@ class ArticleSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         try:
             tagList = validated_data.pop('tagList')
+            article = Article.objects.create(**validated_data)
+            for tag in tagList:
+                tag_obj = Tag.objects.get(id=tag.id) 
+                article.tagList.add(tag_obj)
+
+            return article
         except KeyError as identifier:
             raise serializers.ValidationError({
                 'tagList': 'Please provide a list of tags'
             })
-        
-        article = Article.objects.create(**validated_data)
-        for tag in tagList:
-            tag_obj = Tag.objects.get(id=tag.id) 
-            article.tagList.add(tag_obj)
 
-        return article
+        
 
 class FavoriteArticleSerializer(serializers.ModelSerializer):
         article = ArticleSerializer(required=False)

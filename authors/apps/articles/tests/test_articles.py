@@ -10,10 +10,11 @@ class ArticleTestCase(BaseTestMethods):
 
     def test_get_article(self):
         url = reverse(self.get_post_article_url)
+        print(url)
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + get_user_token(self)
         )
-        self.client.post(url, data=self.article, format='json')
+        response = self.client.post(url, data=self.article, format='json')
         request = self.client.get(url)
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.data), 0)
