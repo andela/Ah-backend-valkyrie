@@ -26,6 +26,6 @@ urlpatterns = [
 
     path('api/v1/articles/', include('authors.apps.articles.urls')),
     path('api-auth/', include('rest_framework.urls',
-                               namespace='rest_framework')),
-    path('api/v1/', include('authors.apps.profiles.urls')),
+                              namespace='rest_framework')),
+    path('api/v1/', include('authors.apps.profiles.urls'))
 ]
