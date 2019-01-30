@@ -61,7 +61,8 @@ class ArticleSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'tagList': 'Please provide a list of tags'
             })
-        
+
+        tagList = validated_data.pop('tagList')
         article = Article.objects.create(**validated_data)
         for tag in tagList:
             tag_obj = Tag.objects.get(id=tag.id) 
