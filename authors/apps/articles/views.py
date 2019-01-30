@@ -317,3 +317,19 @@ class ReadingStatsView(generics.ListAPIView):
 
     def get_queryset(self):
 	    return self.queryset.filter(author=self.request.user)
+
+
+class HighlightListCreate(generics.ListCreateAPIView):
+    queryset = models.HighlightedText.objects.all()
+    serializer_class = serializers.HighlightSerializer
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+    )
+    lookup_field = 'slug'
+
+    def perform_create(self, serializer):
+        article = Article.objects.get(slug=self.kwargs.get('slug'))
+        return serializer.save(article=article, author=self.request.user)
+
+    def get_serializer_context(self):
+        return {"slug": self.kwargs['slug']}

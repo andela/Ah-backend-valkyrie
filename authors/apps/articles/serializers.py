@@ -12,7 +12,8 @@ from .models import (
     Tag,
     FavoriteArticle,
     BookmarkArticle,
-    ReadingStats
+    ReadingStats,
+    HighlightedText,
 )
 from ..comments.serializers import CommentSerializer
 
@@ -114,3 +115,60 @@ class ReadingStatSerializer(serializers.ModelSerializer):
             'read_on',
         )
         model = ReadingStats
+        article = ArticleSerializer(required=False)
+        class Meta:
+            fields = ( 
+                'id' ,     
+                'article',
+            )
+            model = FavoriteArticle
+
+class HighlightSerializer(serializers.ModelSerializer):
+        author = UserSerializer(required=False)
+        class Meta:
+            fields = ( 
+                'id' ,
+                'author',
+                'startIndex',
+                'endIndex',
+                'created',
+                'selected_text',
+                'comment',
+            )
+            model = HighlightedText
+
+        def create(self, validated_data):
+            try:
+                article_slug = self.context["slug"]
+            except KeyError as e:
+                raise serializers.ValidationError({
+	                'slug': 'Please provide a slug'
+	            })
+            
+            article_id = validated_data.pop('article')
+            article = Article.objects.get(slug=article_slug)
+            article_text = article.body
+            startIndex = int(validated_data.pop('startIndex'))
+            endIndex = int(validated_data.pop('endIndex'))
+
+            # reassign values if endIndex is greater
+            if startIndex > endIndex:
+                print(startIndex)
+                temp_startIndex = startIndex
+                temp_endIndex = endIndex
+
+                startIndex = temp_endIndex
+                endIndex = temp_startIndex
+
+            validated_data['startIndex'] = startIndex
+            validated_data['endIndex'] = endIndex
+            validated_data['article'] = article
+
+            selectedText = article_text[startIndex:endIndex]
+            if selectedText == "":
+                raise serializers.ValidationError({
+	                'highlight': 'Not a valid highlight'
+	            })
+            
+            highlight = HighlightedText.objects.create(**validated_data)
+            return highlight

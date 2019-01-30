@@ -43,6 +43,13 @@ class BaseTestMethods(APITestCase):
             "body":"This is a lorem ipsum section.",
             "tagList":["sample"]
         }
+
+        self.highlight_body = {
+            "startIndex":0,
+            "endIndex":15,
+            "comment":"really basic"
+        }
+
         self.get_post_article_url = "articles:articles_list"
         self.single_article_url = "articles:article_detail"
         self.get_author_articles = "articles:author_articles"
@@ -75,6 +82,7 @@ class BaseTestMethods(APITestCase):
             }
         }
         
+        self.highlight_url = "articles:article_highlight"
         
     def create_user(self, data):
         """
