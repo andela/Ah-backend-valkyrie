@@ -81,7 +81,7 @@ class BaseTestMethods(APITestCase):
         url = reverse('user-registration')
         response = self.client.post(url, data=data, format="json")
         return response
-        
+
     # User registration and login helper methods
     def register_user(self):
         url = reverse('user-registration')
@@ -125,7 +125,7 @@ class BaseTestMethods(APITestCase):
     def get_user_acccount_verification_email(self):
         user_data = {
             'user': {
-                'email': self.user['user']['email'], 
+                'email': self.user['user']['email'],
                 'password': self.user['user']['password'],
                 'username': self.user['user']['username']
             }
@@ -143,21 +143,21 @@ class BaseTestMethods(APITestCase):
 
         return self.client.get(
             reverse(
-                'user-account-verification', 
+                'user-account-verification',
                 args=(token, user_email)
             ), format="json"
         )
 
     def get_user2_acccount_verification_email(self):
-            user_data = {
-                'user': {
-                    'email': self.user['user2']['email'], 
-                    'password': self.user['user2']['password'],
-                    'username': self.user['user2']['username']
-                }
+        user_data = {
+            'user': {
+                'email': self.user['user2']['email'],
+                'password': self.user['user2']['password'],
+                'username': self.user['user2']['username']
             }
-            self.create_user(user_data)
-            return mail.outbox
+        }
+        self.create_user(user_data)
+        return mail.outbox
 
     def verify_registered_user2_account(self):
         sent_email = self.get_user2_acccount_verification_email()
@@ -169,7 +169,7 @@ class BaseTestMethods(APITestCase):
 
         return self.client.get(
             reverse(
-                'user-account-verification', 
+                'user-account-verification',
                 args=(token, user_email)
             ), format="json"
         )
