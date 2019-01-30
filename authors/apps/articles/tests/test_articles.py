@@ -30,7 +30,8 @@ class ArticleTestCase(BaseTestMethods):
         request = self.client.get(author_articles)
         self.assertEqual(request.status_code, 200)
         self.assertGreater(len(request.data), 0)
-        self.assertEqual(request.data['results'][0]['author']['username'], author_id)
+        self.assertEqual(request.data['results']
+                         [0]['author']['username'], author_id)
 
     def test_user_creates_article(self):
         url = reverse(self.get_post_article_url)
@@ -108,7 +109,7 @@ class ArticleTestCase(BaseTestMethods):
         )
         request = self.client.post(url, data=self.article, format='json')
         article_slug = request.data['slug']
-        
+
         delete_url = reverse(self.single_article_url, args=[article_slug])
         request = self.client.delete(
             delete_url,
@@ -162,12 +163,11 @@ class ArticleTestCase(BaseTestMethods):
             "test-article-today"
         )
 
-<<<<<<< HEAD
     def test_tagging_for_articles(self):
         url = reverse(self.get_post_article_url)
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + get_user_token(self
-        ))
+                                                          ))
         self.article['tagList'] = ["Tag1", "Tag2", "Tag3"]
         request = self.client.post(url, data=self.article, format='json')
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
@@ -182,7 +182,7 @@ class ArticleTestCase(BaseTestMethods):
         article_slug = request.data['slug']
         self.article['tagList'] = ["Tag1", "Tag2"]
         update_url = reverse(self.single_article_url, args=[article_slug])
-        request = self.client.put(update_url, data=self.article, format='json')  
+        request = self.client.put(update_url, data=self.article, format='json')
         self.assertEqual(request.status_code, status.HTTP_200_OK)
         self.assertEqual(request.data['tagList'], ["Tag1", "Tag2"])
 
@@ -200,10 +200,7 @@ class ArticleTestCase(BaseTestMethods):
         self.assertEqual(tag_request.status_code, 200)
         self.assertEqual(len(tag_request.data), 1)
 
-        #test user cannot favorite his/her own article  
-=======
         # test user cannot favorite his/her own article
->>>>>>> Resolve test issues
     def test_user_cannot_favorite_own_article(self):
         # create article
         url = reverse("articles:articles_list")
@@ -285,13 +282,8 @@ class ArticleTestCase(BaseTestMethods):
         )
         response = self.client.delete(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-<<<<<<< HEAD
-        self.assertEqual(response.data['status'],"unfavorited")
-        
-=======
         self.assertEqual(response.data['status'], "unfavorited")
 
->>>>>>> Resolve test issues
 
 def get_user_token(self):
     user = self.register_and_loginUser()
