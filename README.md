@@ -479,4 +479,4 @@ Authentication required
 
 `GET /api/articles/bookmark/<int:id>`
 
-Authentication required, returns a specified bookmark
+Authentication required, returns a specified bookmark.

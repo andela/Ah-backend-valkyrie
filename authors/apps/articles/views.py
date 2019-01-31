@@ -24,6 +24,8 @@ from .search import ArticleFilter
 from authors.apps.articles.pagination import ArticlePagination
 from .search import ArticleFilter
 from authors.apps.articles.pagination import ArticlePagination
+from django_filters import rest_framework as filter
+
 
 class ListCreateArticle(generics.ListCreateAPIView):
     queryset = models.Article.objects.all()
@@ -268,9 +270,8 @@ class ArticleSearchListAPIView(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.ArticleSerializer
     filter_class = ArticleFilter
-    filter_backends = (SearchFilter,)
-    search_fields = ('title', 'description', 'body',
-                     'author__username', 'tagList__tag')
+    filter_backends = (filter.DjangoFilterBackend, SearchFilter,)
+    search_fields = ('title', 'description', 'body', 'author__username', 'tagList__tag')
 
     def get_queryset(self):
         queryset = models.Article.objects.all()

@@ -21,11 +21,10 @@ from .serializers import(
 class FacebookSociaLoginView(generics.ListCreateAPIView):
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
-
+    serializer_class = FacebookSerializer
     def post(self, request):
-        serializer_class = FacebookSerializer
         user = request.data.get('user', {})
-        serializer = serializer_class(data=user)
+        serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
         print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -34,11 +33,10 @@ class FacebookSociaLoginView(generics.ListCreateAPIView):
 class GoogleSociaLoginView(generics.ListCreateAPIView):
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
-
+    serializer_class = GoogleSerializer
     def post(self, request):
-        serializer_class = GoogleSerializer
         user = request.data.get('user', {})
-        serializer = serializer_class(data=user)
+        serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -46,10 +44,9 @@ class GoogleSociaLoginView(generics.ListCreateAPIView):
 class TwitterSociaLoginView(generics.ListCreateAPIView):
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
-
+    serializer_class = TwitterSerializer
     def post(self, request):
-        serializer_class = TwitterSerializer
         user = request.data.get('user', {})
-        serializer = serializer_class(data=user)
+        serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
