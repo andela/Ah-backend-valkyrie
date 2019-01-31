@@ -37,3 +37,4 @@ google-auth-httplib2
 google-auth-oauthlib
 google-auth
 django_currentuser
+django-filter
