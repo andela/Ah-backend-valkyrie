@@ -198,14 +198,14 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS')
 # SWAGGER SETTINGS
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
-      'Bearer': {
+        'Bearer': {
             'type': 'apiKey',
             'name': 'Authorization',
             'in': 'header'
-      }
-   }
+        }
+    }
 }
 
 REDOC_SETTINGS = {
-   'LAZY_RENDERING': False,
+    'LAZY_RENDERING': False,
 }

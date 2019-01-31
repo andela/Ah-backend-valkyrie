@@ -35,7 +35,7 @@ urlpatterns = [
     path('api/v1/articles/', include('authors.apps.comments.urls')),
     path('api/v1/', include('authors.apps.ratings.urls')),
 
-    path('api/v1/', include('authors.apps.notify.urls')),
+    path('api/v1/', include('authors.apps.notify.urls'))
 ]
 
 if settings.DEBUG:

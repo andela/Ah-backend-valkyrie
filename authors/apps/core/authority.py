@@ -13,4 +13,4 @@ class IsBookmarOwner(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
         else:
-            return obj.user == request.user      
+           return obj.user == request.user

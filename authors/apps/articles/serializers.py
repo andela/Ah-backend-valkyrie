@@ -7,6 +7,8 @@ from rest_framework import status
 
 from authors.apps.authentication.serializers import UserSerializer
 from authors.apps.profiles.serializers import ProfileSerializer
+from rest_framework.exceptions import NotAcceptable
+from ..comments.serializers import CommentSerializer
 from .models import (
     Article,
     Tag,
@@ -14,9 +16,9 @@ from .models import (
     BookmarkArticle,
     ReadingStats,
     HighlightedText,
-    LikeArticle
+    LikeArticle,
+    ReportArticle
 )
-from ..comments.serializers import CommentSerializer
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -213,3 +215,34 @@ class HighlightSerializer(serializers.ModelSerializer):
             
             highlight = HighlightedText.objects.create(**validated_data)
             return highlight
+
+
+class ReportArticleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ReportArticle
+        ordering = 'created_at'
+        fields = ['article', 'user', 'message', 'created_at']
+
+    def create(self, validated_data):
+        try:
+            self.instance = ReportArticle.objects.get(
+                article_id=validated_data.get('article'),
+                user_id=validated_data.get('user')
+            )
+        except Exception:
+            return ReportArticle.objects.create(**validated_data)
+
+        msg = 'You have already reported this article'
+        raise NotAcceptable(
+            detail=msg, code=status.HTTP_406_NOT_ACCEPTABLE)
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['user'] = instance.user.username
+        response['reported_by'] = response.pop('user')
+        response['article'] = {
+            'slug': instance.article.slug,
+            'author': instance.article.author.username
+        }
+        return response
