@@ -21,15 +21,14 @@ class FacebookSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 'Invalid or expired token. Please login again.'
             )
-        print(user_info)  
         user_id = user_info['id']
         email = user_info['email']
-        name = user_info['name']
+        name = user_info['email'].split("@")[0]
         my_kwargs = {
             '{0}_{1}'.format('facebook', 'id'): user_id
         }
         return register_user(
-             email=email, name=name, **my_kwargs
+            email=email, name=name, **my_kwargs
         )
 
 
@@ -49,7 +48,7 @@ class GoogleSerializer(serializers.Serializer):
             )
         user_id = user_info['sub']
         email = user_info['email']
-        name = user_info['name']
+        name = user_info['email'].split("@")[0]
         my_kwargs = {
             '{0}_{1}'.format('google', 'id'): user_id
         }
@@ -74,7 +73,7 @@ class TwitterSerializer(serializers.Serializer):
             )
         user_id = user_info['id_str']
         email = user_info['email']
-        name = user_info['name']
+        name = user_info['email'].split("@")[0]
         my_kwargs = {
             '{0}_{1}'.format('twitter', 'id'): user_id
         }

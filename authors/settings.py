@@ -144,7 +144,11 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CORS_ORIGIN_WHITELIST = (
     '0.0.0.0:4000',
     'localhost:4000',
+    'ah-frontend-valkyrie.herokuapp.com',
+    'localhost:8000',
 )
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'authors/apps/articles/')
 MEDIA_URL = ''
@@ -198,14 +202,14 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS')
 # SWAGGER SETTINGS
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
-      'Bearer': {
+        'Bearer': {
             'type': 'apiKey',
             'name': 'Authorization',
             'in': 'header'
-      }
-   }
+        }
+    }
 }
 
 REDOC_SETTINGS = {
-   'LAZY_RENDERING': False,
+    'LAZY_RENDERING': False,
 }

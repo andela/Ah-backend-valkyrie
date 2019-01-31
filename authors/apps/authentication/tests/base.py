@@ -10,7 +10,7 @@ from .test_data import test_data
 from authors.apps.articles.models import Article, FavoriteArticle
 from django_currentuser.middleware import get_current_user
 from authors.apps.articles.helper import FavoriteHelper
-
+from authors.apps.authentication.models import User
 
 class BaseTestMethods(APITestCase):
 
@@ -25,6 +25,11 @@ class BaseTestMethods(APITestCase):
                 'username': 'testuser2',
                 'email': 'testuser2@andela.com',
                 'password': 'TestUser123#'
+            },
+            'superuser': {
+                'username': 'testsuperuser',
+                'email': 'testsuperuser@andela.com',
+                'password': 'TestUser124#'
             }
         }
         self.invalid_facebook_token = "EAAEBLo2bPF0BAPEIRTvME7zkOpzyWfkOj8Do7OvaK4xZCXOO3uk4KnTgCqOlnTiurTRCxLNoGRBSt1cUgZBaxgg4s4dUHCdiTtOiZAKTEO5fS2ZCFKsPrRAJzp4ltWTQM7uXLHFoZAcOHPZBZAd4W2LJGTKWZAfr1K8oEP1HZAcuePSEztI7yP9T3"
@@ -72,6 +77,11 @@ class BaseTestMethods(APITestCase):
                 "body": "This is another test comment."
             }
         }
+        self.jwt_helper_class = JWTHelper()
+        self.expired_token = test_data.get('expired_token')
+        self.non_bearer_token = test_data.get('non_bearer_token')
+        self.invalid_token = test_data.get('invalid_token')
+        self.non_registered_token = test_data.get('non_registered_token')
 
         self.comment3 = {
             "comment": {
@@ -228,3 +238,6 @@ class BaseTestMethods(APITestCase):
         article = self.client.post(
             post_article_url, data=self.article, format='json')
         return article.data
+
+    def register_superuser(self):
+        return User.objects.create_superuser(**self.user.get('superuser'))

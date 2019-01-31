@@ -1,6 +1,5 @@
 language: python
 
-# python version
 addons:
   postgresql: "9.6"
 

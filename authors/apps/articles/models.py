@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
-from .helper import FavoriteHelper, StatsHelper
+from .helper import FavoriteHelper, StatsHelper, LikeHelper
 from django_currentuser.middleware import get_current_user
 from gunicorn.util import get_username
 from notifications.models import Notification
@@ -17,12 +17,10 @@ from authors.apps.authentication.models import User
 from authors.apps.notify.helper import Notifier
 from authors.apps.profiles.models import Profile
 
-from .helper import FavoriteHelper
 from django.core.mail import send_mass_mail
 
 from authors.apps.ratings.utils import fetch_rating_average
 from authors.apps.ratings.models import Rating
-from .helper import LikeHelper
 
 
 class Tag(models.Model):
@@ -186,3 +184,11 @@ def article_notifications_handler(sender, **kwargs):
 
     Notifier.batch_follower_email_notifier(
         author, followers, article_url=article_url, url=url)
+    
+
+class ReportArticle(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)

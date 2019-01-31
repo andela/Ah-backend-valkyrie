@@ -147,7 +147,7 @@ class TestJWTAuthentication(BaseTestMethods):
             }
         }
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + user.token)
-        res = self.client.put(url, data=data, format='json')
+        self.client.put(url, data=data, format='json')
         login_url = reverse('user-login')
         data = {
             'user': {

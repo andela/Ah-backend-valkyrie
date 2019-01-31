@@ -90,6 +90,16 @@ The preferred JSON object to be returned by the API should be structured as foll
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
       "following": false
+    },
+    "likes": {
+        "users": [
+            "Rajab"
+        ],
+        "count": 1
+    },
+    "dislikes": {
+        "users": [],
+        "count": 0
     }
   }
 }
@@ -114,6 +124,16 @@ The preferred JSON object to be returned by the API should be structured as foll
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
       "following": false
+    },
+    "likes": {
+        "users": [
+            "Rajab"
+        ],
+        "count": 1
+    },
+    "dislikes": {
+        "users": [],
+        "count": 0
     }
   }, {
 
@@ -131,9 +151,30 @@ The preferred JSON object to be returned by the API should be structured as foll
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
       "following": false
+    },
+    "likes": {
+        "users": [
+            "Rajab"
+        ],
+        "count": 1
+    },
+    "dislikes": {
+        "users": [],
+        "count": 0
     }
   }],
   "articlesCount": 2
+}
+```
+
+### Like
+
+```source-json
+{
+  "article": 1,
+  "user": 1,
+  "like": true,
+  "modified_at": "2019-01-25"
 }
 ```
 

@@ -15,20 +15,18 @@ from authors.apps.profiles.models import Profile
 from django_social_share.templatetags import social_share
 
 from . import models
-from .models import Article, FavoriteArticle, BookmarkArticle
+from .models import Article, FavoriteArticle, BookmarkArticle, ReportArticle
 from . import serializers
-from .helper import LikeHelper
+from .helper import LikeHelper, ReportArticleHelper
 from .renderers import ArticleJSONRenderer
 from authors.apps.core import authority
-from .search import ArticleFilter
-from authors.apps.articles.pagination import ArticlePagination
 from .search import ArticleFilter
 from authors.apps.articles.pagination import ArticlePagination
 from django_filters import rest_framework as filter
 
 
 class ListCreateArticle(generics.ListCreateAPIView):
-    queryset = models.Article.objects.all()
+    queryset = Article.objects.all()
     serializer_class = serializers.ArticleSerializer
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
@@ -72,6 +70,7 @@ class RetrieveAuthorArticles(generics.ListAPIView):
         username = self.kwargs.get('username')
         user_id = get_user_model().objects.get(username=username)
         return self.queryset.filter(author_id=user_id)
+
 
 class ListTag(generics.ListAPIView):
     queryset = models.Tag.objects.all()
@@ -133,7 +132,7 @@ class DislikeArticleAPIView(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-        
+
 class FavoriteArticlesView(generics.CreateAPIView):
     queryset = models.FavoriteArticle.objects.all()
     serializer_class = serializers.FavoriteArticleSerializer
@@ -204,7 +203,6 @@ class UnfavoriteArticleView(generics.DestroyAPIView):
                 "article": article.title,
                 "slug": article.slug,
                 "status": "unfavorited"
-
             }
         )
 
@@ -266,12 +264,70 @@ class ShareArticleView(generics.ListAPIView):
         return provider_link[0](context, link)[provider_link[1]]
 
 
+class ReportArticleAPIView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = serializers.ReportArticleSerializer
+    like_helper_class = LikeHelper()
+    report_article_helper = ReportArticleHelper()
+
+    def post(self, request, **kwargs):
+        article = self.like_helper_class.get_article_by_slug(
+            model=Article,
+            slug=kwargs.get('slug')
+        )
+        if request.user.id == article.author.id:
+            msg = 'You cannot report your own article'
+            raise NotAcceptable(
+                detail=msg, code=status.HTTP_406_NOT_ACCEPTABLE)
+
+        data = {
+            "article": article.id if article else None,
+            "user": request.user.id,
+            "message": request.data.get('message')
+        }
+        serializer = self.serializer_class(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def get(self, request, format=None, **kwargs):
+        if request.user.is_superuser:
+            if kwargs.get('slug'):
+                #  Get all reports for a single article
+                article = self.like_helper_class.get_article_by_slug(
+                    model=Article,
+                    slug=kwargs.get('slug')
+                )
+                reported = self.report_article_helper.get_reports_for_single_article(
+                    model=ReportArticle,
+                    article=article
+                )
+            else:
+                #  Get all reports for all articles
+                reported = self.report_article_helper.get_all_reports(
+                    model=ReportArticle
+                )
+            serializer = serializers.ReportArticleSerializer(
+                reported, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        msg = 'You are not authorized to access this resource'
+        return Response({'detail': msg}, status=status.HTTP_401_UNAUTHORIZED)
+
+
 class ArticleSearchListAPIView(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.ArticleSerializer
     filter_class = ArticleFilter
-    filter_backends = (filter.DjangoFilterBackend, SearchFilter,)
-    search_fields = ('title', 'description', 'body', 'author__username', 'tagList__tag')
+    filter_backends = (filter.DjangoFilterBackend, SearchFilter, )
+    search_fields = (
+        'title',
+        'description',
+        'body',
+        'author__username',
+        'tagList__tag'
+    )
 
     def get_queryset(self):
         queryset = models.Article.objects.all()
@@ -344,6 +400,8 @@ class UnBookmarkArticleView(generics.DestroyAPIView):
             }
 
         )
+
+
 class GetBookmarkArticle(generics.RetrieveAPIView):
     queryset = models.BookmarkArticle.objects.all()
     serializer_class = serializers.BookmarkSerializer
@@ -355,6 +413,7 @@ class GetBookmarkArticle(generics.RetrieveAPIView):
         bookmark = get_object_or_404(self.queryset, id=bookmark_id)
         return self.queryset.filter(id=bookmark_id)
 
+
 class ReadingStatsView(generics.ListAPIView):
     queryset = models.ReadingStats.objects.all()
     serializer_class = serializers.ReadingStatSerializer
@@ -364,7 +423,7 @@ class ReadingStatsView(generics.ListAPIView):
     )
 
     def get_queryset(self):
-	    return self.queryset.filter(author=self.request.user)
+        return self.queryset.filter(author=self.request.user)
 
 
 class HighlightListCreate(generics.ListCreateAPIView):

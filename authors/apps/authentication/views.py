@@ -1,7 +1,11 @@
 import jwt
 
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView, GenericAPIView
+from rest_framework.generics import (
+    RetrieveUpdateAPIView,
+    ListAPIView,
+    GenericAPIView
+)
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -104,7 +108,7 @@ class UsersListAPIView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    
+
 class LoginAPIView(GenericAPIView):
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
