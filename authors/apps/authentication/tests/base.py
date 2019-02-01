@@ -40,10 +40,11 @@ class BaseTestMethods(APITestCase):
         self.non_registered_token = test_data.get('non_registered_token')
 
         self.article = {
-            "title": "Test article today",
-            "description": "Testing article creation",
-            "body": "This is a lorem ipsum section.",
-            "tagList": ["sample"]
+            "title":"Test article today",
+            "description":"Testing article creation",
+            "body":"This is a lorem ipsum section.",
+            "tagList":["sample"],
+            "image_url":"https://cdn.ccn.com/wp-content/uploads/2019/01/bitcoin-trader-handcuff-arrest-jail-shutterstock.jpg"
         }
 
         self.highlight_body = {

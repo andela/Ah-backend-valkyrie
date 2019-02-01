@@ -43,6 +43,7 @@ class Article(models.Model):
     description = models.CharField(max_length=300)
     body = models.TextField()
     tagList = models.ManyToManyField(Tag)
+    image_url = models.CharField(max_length=250, blank=True)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(
