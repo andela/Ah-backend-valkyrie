@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'authors.apps.profiles',
     'rest_framework.authtoken',
     'authors.apps.articles',
+    'authors.apps.comments',
 ]
 
 MIDDLEWARE = [
@@ -149,6 +150,7 @@ FACEBOOK_APP_SECRET = '6690f47e6f7eff6390053a440066d661'
 # the `authentication` module. This module is registered above in a setting
 # called `INSTALLED_APPS`.
 AUTH_USER_MODEL = 'authentication.User'
+AUTH_PROFILE_MODULE = 'profiles.Profile'
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'authors.apps.core.exceptions.core_exception_handler',

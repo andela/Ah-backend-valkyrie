@@ -12,4 +12,5 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
     path('api/v1/', include('authors.apps.profiles.urls')),
+    path('api/v1/articles/', include('authors.apps.comments.urls')),
 ]

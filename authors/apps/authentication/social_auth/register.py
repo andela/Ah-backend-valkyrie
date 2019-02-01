@@ -5,6 +5,9 @@ from authors.apps.authentication.models import User
 
 def register_user(email, name, **kwargs):
     # register social media user.
+    user_email = User.objects.filter(email=email)
+    if user_email.exists():
+        return "email already exists"
     user = User.objects.filter(**kwargs)
     if not user.exists():
         user = {
@@ -13,7 +16,7 @@ def register_user(email, name, **kwargs):
         User.objects.filter(email=email).update(**kwargs)
         User.objects.filter(email=email).update(is_active=True)
         new_user = authenticate(email=email, password="aaaaaaaa")
-        return new_user.get_token
+        return new_user.token
     User.objects.filter(**kwargs)
     registered_user = authenticate(email=email, password="aaaaaaaa")
-    return registered_user.get_token
+    return registered_user.token

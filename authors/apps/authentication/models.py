@@ -140,21 +140,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         the user's real name, we return their username instead.
         """
         return self.username
-    
-    @property
-    def get_token(self):
-        """
-        Generate a JSON Web Token on Registration and Login with an expiry
-        date set to 14 days.
-        """
-        dt = datetime.now() + timedelta(days=14)
-
-        token = jwt.encode({
-            'id': self.pk,
-            'exp': int(dt.strftime('%s'))
-        }, settings.SECRET_KEY, algorithm='HS256')
-
-        return token.decode('utf-8')
 
     @property
     def token(self):

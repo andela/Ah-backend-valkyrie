@@ -9,6 +9,7 @@ from .views import (
 	UserPasswordResetRequestAPIView,
     UsersListAPIView,
 )
+   
 
 urlpatterns = [
     path(
@@ -17,7 +18,6 @@ urlpatterns = [
         name='update-retrieve-user'
     ),
     path(
-
         'users/register', 
         RegistrationAPIView.as_view(),
         name='user-registration'),
