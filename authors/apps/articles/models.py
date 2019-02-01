@@ -81,5 +81,11 @@ class FavoriteArticle(models.Model):
     def __str__(self):
         return self.article
 
+class BookmarkArticle(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(
+           get_user_model(), on_delete=models.CASCADE,
+          null=True
+    )
 
      

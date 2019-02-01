@@ -2,12 +2,15 @@ from rest_framework import generics, permissions, status
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.exceptions import NotAcceptable, NotFound
+from rest_framework import status
 from django.http import Http404
 from django.contrib.auth import get_user_model
 from rest_framework.filters import SearchFilter
+from django.core.exceptions import ObjectDoesNotExist
+
 
 from . import models
-from .models import Article, FavoriteArticle
+from .models import Article, FavoriteArticle, BookmarkArticle
 from . import serializers
 from .renderers import ArticleJSONRenderer
 from authors.apps.core import authority
@@ -155,3 +158,70 @@ class ArticleSearchListAPIView(generics.ListAPIView):
         if search_key == 'tag':
             queryset = queryset.filter(tagList__tag__icontains=search_term)
         return queryset
+
+
+class BookmarkArticleView(generics.ListCreateAPIView):
+    queryset = models.BookmarkArticle.objects.all()
+    serializer_class = serializers.BookmarkSerializer
+    permission_classes = (
+            permissions.IsAuthenticatedOrReadOnly,
+            authority.IsOwnerOrReadOnly,
+        )
+    def get_queryset(self):
+        slug = self.kwargs.get('slug')
+        article = get_object_or_404(Article, slug=slug)  
+        return self.queryset.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        slug=self.kwargs.get('slug')
+        article = None
+        bookmark = None
+        try:
+            article = get_object_or_404(Article, slug=slug)
+            bookmark = self.queryset.get(
+                article=article.id,
+                user=self.request.user.id
+            )
+            
+            if bookmark.article_id == article.id:
+                print(bookmark.article_id)
+                response = {'message': 'You cannot bookmark the same article twice'}
+                raise NotAcceptable(detail=response, code=status.HTTP_406_NOT_ACCEPTABLE)
+                      
+        except ObjectDoesNotExist:
+            serializer.save(article=article, user=self.request.user)
+        
+class UnBookmarkArticleView(generics.DestroyAPIView):
+        queryset = models.BookmarkArticle.objects.all()
+        serializer_class = serializers.BookmarkSerializer
+        permission_classes = (
+            permissions.IsAuthenticatedOrReadOnly,
+            authority.IsBookmarOwner,
+        )
+
+        def delete(self, request, *args, **kwargs):
+            slug = self.kwargs.get('slug')
+            bookmark_id = self.kwargs.get('pk')
+            article = get_object_or_404(Article, slug=slug)
+            bookmark = get_object_or_404(self.queryset, id=bookmark_id)    
+            self.destroy(request, *args, **kwargs)
+            return Response(
+                {
+                    "article": article.title,
+                     "slug": article.slug,
+                     "status": "unbookmarked"
+                     
+                }
+            
+            )    
+
+class GetBookmarkArticle(generics.RetrieveAPIView):
+        queryset = models.BookmarkArticle.objects.all()
+        serializer_class = serializers.BookmarkSerializer
+        permission_classes = (
+            permissions.IsAuthenticated,)  
+
+        def get_queryset(self):
+            bookmark_id = self.kwargs.get('pk')
+            bookmark = get_object_or_404(self.queryset, id=bookmark_id)
+            return self.queryset.filter(id=bookmark_id)    

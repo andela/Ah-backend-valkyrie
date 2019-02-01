@@ -417,7 +417,7 @@ No additional parameters required
 
 ### Unfavorite Article
 
-`DELETE /api/articles/:slug/favorite`
+`DELETE /api/articles/:slug/favorite/<int:id>`
 
 Authentication required, returns the Article
 
@@ -441,3 +441,20 @@ No additional parameters required
 
 #### Search by Title
 `GET /api/v1/articles/search?search=title+here&search_key=title`
+### Bookmark Article
+
+`POST /api/articles/:slug/bookmark`
+
+Authentication required, returns the Article
+
+
+### UnBookmark Article
+
+`DELETE /api/articles/:slug/bookmark/<int:id>`
+
+Authentication required
+
+### Get Bookmarks Article
+`GET /api/articles/bookmark/<int:id>`
+
+Authentication required, returns a specified bookmark
