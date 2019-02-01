@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'notifications',
 
     'corsheaders',
     'django_extensions',
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
     'authors.apps.ratings',
     'django_social_share',
     'drf_yasg',
+    'authors.apps.notify',
 ]
 
 MIDDLEWARE = [
