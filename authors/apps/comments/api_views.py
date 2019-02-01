@@ -1,8 +1,9 @@
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.exceptions import PermissionDenied
 from authors.apps.articles.models import Article
 from rest_framework import response
-from .models import Comment, CommentReaction
+from .models import Comment, CommentHistory, CommentReaction
 from rest_framework import status
 from .serializers import CommentSerializer, CommentReactionSerializer
 from .renderers import CommentsRenderer
@@ -66,6 +67,30 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
     lookup_fields = ["pk", "slug"]
 
+    def put(self, request, slug, pk):
+        #Update comment and save previous comment
+        request_data = request.data.get('comment', {})
+        serializer = CommentList.serializer_class(data=request_data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            comment = Comment.objects.get(id=pk)
+            if comment.author.id != request.user.id:
+                raise PermissionDenied
+            edit_history = CommentHistory(body=comment.body, comment=comment)
+            edit_history.save()
+            comment.body = request_data['body']
+            comment.save()
+            response_data = {"message": "Comment updated successfully"}
+            status_code = status.HTTP_200_OK
+        except PermissionDenied:
+            status_code = status.HTTP_403_FORBIDDEN
+            response_data = {"error": "No Permission to edit this comment"}
+        except Exception as error:
+            response_data = {"error": "Cannot find this comment."}
+            status_code = status.HTTP_404_NOT_FOUND
+        finally:
+            return response.Response(response_data, status_code)
+
 
 class CommentLike(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
@@ -125,3 +150,6 @@ class CommentDislike(generics.DestroyAPIView):
     queryset = CommentReaction.objects.all()
     serializer_class = CommentReactionSerializer
     lookup_fields = ["pk"]
+    ordering = ("created_at",)
+
+    

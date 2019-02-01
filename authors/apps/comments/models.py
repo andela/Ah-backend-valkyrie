@@ -29,3 +29,15 @@ class CommentReaction(models.Model):
 
     def __str__(self):
         return self.like
+class CommentHistory(models.Model):
+    body = models.TextField()
+    comment = models.ForeignKey(
+        Comment, related_name='comment_history',
+        on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.body
+
+    class Meta:
+        ordering = ('created_at',)
