@@ -19,7 +19,7 @@ urlpatterns = [
     path(
 
         'users/register', 
-        RegistrationAPIView.as_view(), 
+        RegistrationAPIView.as_view(),
         name='user-registration'),
     path(
         'users/login/',
