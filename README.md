@@ -1,28 +1,30 @@
 [![Build Status](https://travis-ci.org/andela/ah-backend-valkyrie.svg?branch=develop)](https://travis-ci.org/andela/ah-backend-valkyrie) [![Coverage Status](https://coveralls.io/repos/github/andela/ah-backend-valkyrie/badge.svg)](https://coveralls.io/github/andela/ah-backend-valkyrie)
 
-Authors Haven - A Social platform for the creative at heart.
-=======
+# Authors Haven - A Social platform for the creative at heart.
 
 ## Vision
+
 Create a community of like minded authors to foster inspiration and innovation
 by leveraging the modern web.
 
 ---
+
 ### How to Set up the environment
 
 - Make a copy of `.env.example` to create `.env` file within the root directory.
 - Add your Postgres database url to the `.env` file E.g `postgres://username:password@localhost:portnumber/databasename`.
-if your database does not have a password your can use `postgres://username@localhost:portnumber/database_name`
+  if your database does not have a password your can use `postgres://username@localhost:portnumber/database_name`
 - Leave the `SECRET_KEY` as `this-is-hard-to-break`
 
 #### How to configure email
+
 - Use a valid gmail account or create one with [Sendgrid](https://sendgrid.com)
 - Fill in the environment variables with your login credentials.
-E.g **Using Gmail as your SMTP**
+  E.g **Using Gmail as your SMTP**
 
-* `EMAIL_HOST='smtp.gmail.com'`, 
-* `EMAIL_HOST_USER='youremailaddress@gmail.com'`,  
-* `EMAIL_HOST_PASSWORD='yourgmailpassword'`, 
+* `EMAIL_HOST='smtp.gmail.com'`,
+* `EMAIL_HOST_USER='youremailaddress@gmail.com'`,
+* `EMAIL_HOST_PASSWORD='yourgmailpassword'`,
 
 ### How to run the App
 
@@ -33,11 +35,13 @@ E.g **Using Gmail as your SMTP**
 - Run the app `python manage.py runserver`
 
 ### How to run the Tests
+
 - Use `python manage.py test` to run the tests
 
 ---
 
 ## API Spec
+
 The preferred JSON object to be returned by the API should be structured as follows:
 
 ### Users (for authentication)
@@ -53,7 +57,9 @@ The preferred JSON object to be returned by the API should be structured as foll
   }
 }
 ```
+
 ### Profile
+
 ```source-json
 {
   "profile": {
@@ -64,7 +70,9 @@ The preferred JSON object to be returned by the API should be structured as foll
   }
 }
 ```
+
 ### Single Article
+
 ```source-json
 {
   "article": {
@@ -86,7 +94,9 @@ The preferred JSON object to be returned by the API should be structured as foll
   }
 }
 ```
+
 ### Multiple Articles
+
 ```source-json
 {
   "articles":[{
@@ -126,7 +136,9 @@ The preferred JSON object to be returned by the API should be structured as foll
   "articlesCount": 2
 }
 ```
+
 ### Single Comment
+
 ```source-json
 {
   "comment": {
@@ -143,7 +155,9 @@ The preferred JSON object to be returned by the API should be structured as foll
   }
 }
 ```
+
 ### Multiple Comments
+
 ```source-json
 {
   "comments": [{
@@ -161,7 +175,9 @@ The preferred JSON object to be returned by the API should be structured as foll
   "commentsCount": 1
 }
 ```
+
 ### List of Tags
+
 ```source-json
 {
   "tags": [
@@ -170,7 +186,9 @@ The preferred JSON object to be returned by the API should be structured as foll
   ]
 }
 ```
+
 ### Errors and Status Codes
+
 If a request fails any validations, expect errors in the following format:
 
 ```source-json
@@ -182,16 +200,16 @@ If a request fails any validations, expect errors in the following format:
   }
 }
 ```
+
 ### Other status codes:
+
 401 for Unauthorized requests, when a request requires authentication but it isn't provided.
 
 403 for Forbidden requests, when a request may be valid but the user doesn't have permissions to perform the action
 
 404 for Not found requests, when a resource can't be found to fulfill the request
 
-
-Endpoints:
-----------
+## Endpoints:
 
 ### Authentication:
 
@@ -434,19 +452,22 @@ No additional parameters required
 `GET /api/v1/articles/search?search=search+word+here`
 
 #### Search by Tag
+
 `GET /api/v1/articles/search?search=tag+here&search_key=tag`
 
 #### Search by Author
+
 `GET /api/v1/articles/search?search=author+name+here&search_key=author`
 
 #### Search by Title
+
 `GET /api/v1/articles/search?search=title+here&search_key=title`
+
 ### Bookmark Article
 
 `POST /api/articles/:slug/bookmark`
 
 Authentication required, returns the Article
-
 
 ### UnBookmark Article
 
@@ -455,6 +476,7 @@ Authentication required, returns the Article
 Authentication required
 
 ### Get Bookmarks Article
+
 `GET /api/articles/bookmark/<int:id>`
 
 Authentication required, returns a specified bookmark

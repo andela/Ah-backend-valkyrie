@@ -8,7 +8,8 @@ from authors.apps.profiles.serializers import ProfileSerializer
 
 
 class CustomValidator:
-    def password_strength(value):
+    @classmethod
+    def password_strength(cls, value):
         """
         Test if password contains numbers, letters and special
         characters else raise serializer Validation error
@@ -138,7 +139,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('email', 'username', 'password', 'profile', 'first_name',
-                  'last_name', 'country', 'bio', 'image')
+                  'last_name', 'country', 'bio', 'image', 'is_active')
 
         # The `read_only_fields` option is an alternative for explicitly
         # specifying the field with `read_only=True` like we did for password

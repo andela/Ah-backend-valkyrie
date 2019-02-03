@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.core import mail
 
 from authors.apps.authentication.jwt_helper import JWTHelper
+from authors.apps.articles.helper import LikeHelper
 from .test_data import test_data
 from authors.apps.articles.models import Article, FavoriteArticle
 from django_currentuser.middleware import get_current_user
@@ -32,16 +33,17 @@ class BaseTestMethods(APITestCase):
         self.valid_twitter_token = "371067164-CGZmMaXIIPfNT0V1OwGHD9PJ66HuNEFMuMz6t6KD EIhr3yUAXNtjw13klhojtihTVnIoz3o8E88J6dR5TCIJX"
         self.invalid_twitter_token = "3710671264-CGZmMaXIIPfNT0V1OwGHD9PJ66HuNEFMuMz6t6KD EIhr3yUAXNtjw13klhojtihTVnIoz3o8E88J6dR5TCIJX"
         self.jwt_helper_class = JWTHelper()
+        self.like_helper_class = LikeHelper()
         self.expired_token = test_data.get('expired_token')
         self.non_bearer_token = test_data.get('non_bearer_token')
         self.invalid_token = test_data.get('invalid_token')
         self.non_registered_token = test_data.get('non_registered_token')
 
         self.article = {
-            "title":"Test article today",
-            "description":"Testing article creation",
-            "body":"This is a lorem ipsum section.",
-            "tagList":["sample"]
+            "title": "Test article today",
+            "description": "Testing article creation",
+            "body": "This is a lorem ipsum section.",
+            "tagList": ["sample"]
         }
 
         self.highlight_body = {
@@ -56,7 +58,7 @@ class BaseTestMethods(APITestCase):
         self.get_tags_url = "articles:tags_list"
         self.get_user_stats = "articles:reading-stats"
 
-        self.model =   FavoriteArticle
+        self.model = FavoriteArticle
         self.model2 = Article
         self.favorite = FavoriteHelper()
         self.comment = {
@@ -75,13 +77,11 @@ class BaseTestMethods(APITestCase):
                 "body": "This is another test comment."
             }
         }
-        
         self.updated_comment = {
             "comment": {
                 "body": "Updated this test comment."
             }
         }
-        
         self.highlight_url = "articles:article_highlight"
         
     def create_user(self, data):
@@ -195,15 +195,15 @@ class BaseTestMethods(APITestCase):
     def create_article(self):
         url = reverse("articles:articles_list")
         self.client.credentials(
-            HTTP_AUTHORIZATION='Bearer ' + self.get_user_token() 
+            HTTP_AUTHORIZATION='Bearer ' + self.get_user_token()
         )
         request = self.client.post(url, data=self.article, format='json')
         return request
-        
+
     def favorite_article(self):
         article = self.create_article()
         article_slug = article.data['slug']
-        url  = reverse("articles:favorite-articles", args=[article_slug])
+        url = reverse("articles:favorite-articles", args=[article_slug])
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + self.get_user2_token()
         )
@@ -216,13 +216,14 @@ class BaseTestMethods(APITestCase):
         url = reverse("articles:bookmark-articles", args=[article_slug])
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + self.get_user_token())
-        response = self.client.post(url, data=self.article, format='json')    
-        return response    
+        response = self.client.post(url, data=self.article, format='json')
+        return response
+
     def post_article(self):
         user = self.register_and_loginUser()
         post_article_url = reverse(self.get_post_article_url)
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + user.data['token'])
         article = self.client.post(
-            post_article_url,data=self.article, format='json')
+            post_article_url, data=self.article, format='json')
         return article.data

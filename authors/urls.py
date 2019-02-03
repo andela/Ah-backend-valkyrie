@@ -13,5 +13,5 @@ urlpatterns = [
                               namespace='rest_framework')),
     path('api/v1/', include('authors.apps.profiles.urls')),
     path('api/v1/articles/', include('authors.apps.comments.urls')),
-    path('api/v1/', include('authors.apps.ratings.urls')),
+    path('api/v1/', include('authors.apps.ratings.urls'))
 ]

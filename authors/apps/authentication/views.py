@@ -1,9 +1,8 @@
 import jwt
 
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateAPIView, GenericAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView, GenericAPIView
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -59,7 +58,7 @@ class RegistrationAPIView(APIView):
         )
         subject = 'Author\'s Haven Account Verification.'
         content = '<p><strong>Hello {}!</strong> </p> \
-        <p>Thank you for registering with Authors Haven. \
+        <p>Thank you for registering with Author\'s Haven. \
         Please follow the link below to activate your account.</p> \
         <br> {}'.format((user.username).capitalize(), url)
 
@@ -105,7 +104,7 @@ class UsersListAPIView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    
+
 class LoginAPIView(APIView):
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)

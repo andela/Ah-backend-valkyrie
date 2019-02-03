@@ -4,14 +4,16 @@ from authors.apps.authentication.serializers import UserSerializer
 
 
 class CommentHistorySerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = CommentHistory
         fields = ["id", "body", "created_at"]
 
+
 class CommentSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     comment_history = CommentHistorySerializer(many=True, read_only=True)
+
     class Meta:
         model = Comment
         fields = [
@@ -33,4 +35,3 @@ class CommentReactionSerializer(serializers.ModelSerializer):
         model = CommentReaction
         fields = ("id", "comment", "like", "user")
         read_only_fields = ['comment', 'user']
-

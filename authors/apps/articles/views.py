@@ -1,9 +1,11 @@
 from rest_framework import generics, permissions, status
-from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.exceptions import NotAcceptable, NotFound
 from rest_framework import status
-from django.http import Http404
+from rest_framework.exceptions import NotFound, NotAcceptable
+from django.shortcuts import get_object_or_404
+
 from django.contrib.auth import get_user_model
 from rest_framework.filters import SearchFilter
 from django.core.exceptions import ObjectDoesNotExist
@@ -15,6 +17,7 @@ from django_social_share.templatetags import social_share
 from . import models
 from .models import Article, FavoriteArticle, BookmarkArticle
 from . import serializers
+from .helper import LikeHelper
 from .renderers import ArticleJSONRenderer
 from authors.apps.core import authority
 from .search import ArticleFilter
@@ -68,7 +71,6 @@ class RetrieveAuthorArticles(generics.ListAPIView):
         user_id = get_user_model().objects.get(username=username)
         return self.queryset.filter(author_id=user_id)
 
-
 class ListTag(generics.ListAPIView):
     queryset = models.Tag.objects.all()
     serializer_class = serializers.TagSerializer
@@ -84,6 +86,52 @@ class ListTag(generics.ListAPIView):
         })
 
 
+class LikeArticleAPIView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = serializers.LikeArticleSerializer
+    like_helper_class = LikeHelper()
+
+    def post(self, request, **kwargs):
+        article = self.like_helper_class.get_article_by_slug(
+            model=models.Article,
+            slug=kwargs.get('slug')
+        )
+
+        data = {
+            "article": article.id if article else None,
+            "user": request.user.id,
+            "like": True
+        }
+        serializer = self.serializer_class(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class DislikeArticleAPIView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = serializers.LikeArticleSerializer
+    like_helper_class = LikeHelper()
+
+    def post(self, request, **kwargs):
+        article = self.like_helper_class.get_article_by_slug(
+            model=models.Article,
+            slug=kwargs.get('slug')
+        )
+
+        data = {
+            "article": article.id if article else None,
+            "user": request.user.id,
+            "like": False
+        }
+        serializer = self.serializer_class(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        
 class FavoriteArticlesView(generics.CreateAPIView):
     queryset = models.FavoriteArticle.objects.all()
     serializer_class = serializers.FavoriteArticleSerializer
@@ -228,7 +276,6 @@ class ArticleSearchListAPIView(generics.ListAPIView):
         queryset = models.Article.objects.all()
         search_key = self.request.query_params.get('search_key', None)
         search_term = self.request.query_params.get('search', None)
-
         if search_key == 'author':
             queryset = queryset.filter(author__username__icontains=search_term)
         if search_key == 'title':

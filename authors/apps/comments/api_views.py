@@ -37,13 +37,13 @@ class CommentList(generics.ListCreateAPIView):
                 body=comment['body']
             ) & Q(
                 article_id=article_id
-                ) & Q(
-                    author_id=author_id
-                    )
+            ) & Q(
+                author_id=author_id
+            )
         )
         if group.exists():
             return response.Response(
-                                {"message": "You can't give the same comment twice on the same article"}, status=status.HTTP_409_CONFLICT,)  
+                {"message": "You can't give the same comment twice on the same article"}, status=status.HTTP_409_CONFLICT,)
         serializer.save(author=current_user, article=articles)
         return response.Response(
             {"message": "comment created ", "comment": serializer.data},
@@ -68,7 +68,7 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_fields = ["pk", "slug"]
 
     def put(self, request, slug, pk):
-        #Update comment and save previous comment
+        # Update comment and save previous comment
         request_data = request.data.get('comment', {})
         serializer = CommentList.serializer_class(data=request_data)
         serializer.is_valid(raise_exception=True)
@@ -103,7 +103,7 @@ class CommentLike(generics.GenericAPIView):
         current_user = User.objects.filter(email=user).first()
         user_id = current_user.id
         _id = kwargs['pk']
-        
+
         liked_group = CommentReaction.objects.filter(
             Q(like=True) & Q(user_id=user_id) & Q(comment_id=_id))
 
@@ -136,7 +136,7 @@ class CommentLike(generics.GenericAPIView):
         _id = kwargs['pk']
         _bool = True
         state = get_list_or_404(
-            CommentReaction, comment_id=_id 
+            CommentReaction, comment_id=_id
         )
         likes = [item for item in state if item.like == _bool]
         serializer = self.serializer_class(state, many=True)
@@ -151,5 +151,3 @@ class CommentDislike(generics.DestroyAPIView):
     serializer_class = CommentReactionSerializer
     lookup_fields = ["pk"]
     ordering = ("created_at",)
-
-    
