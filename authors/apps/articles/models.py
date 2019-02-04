@@ -61,6 +61,7 @@ class Article(models.Model):
             article_id=self.pk
         )
 
+
 class ArticleImage(models.Model):
     article = models.ForeignKey(
         Article,
