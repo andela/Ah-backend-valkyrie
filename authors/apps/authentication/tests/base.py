@@ -51,6 +51,28 @@ class BaseTestMethods(APITestCase):
         self.model =   FavoriteArticle
         self.model2 = Article
         self.favorite = FavoriteHelper()
+        self.comment = {
+            "comment": {
+                "body": "This is a test comment."
+            }
+        }
+        self.comment2 = {
+            "comment": {
+                "body": "This is another test comment."
+            }
+        }
+
+        self.comment3 = {
+            "comment": {
+                "body": "This is another test comment."
+            }
+        }
+        
+        self.updated_comment = {
+            "comment": {
+                "body": "Updated this test comment."
+            }
+        }
         
     def create_user(self, data):
         """
@@ -186,3 +208,11 @@ class BaseTestMethods(APITestCase):
             HTTP_AUTHORIZATION='Bearer ' + self.get_user_token())
         response = self.client.post(url, data=self.article, format='json')    
         return response    
+    def post_article(self):
+        user = self.register_and_loginUser()
+        post_article_url = reverse(self.get_post_article_url)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + user.data['token'])
+        article = self.client.post(
+            post_article_url,data=self.article, format='json')
+        return article.data

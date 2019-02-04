@@ -5,30 +5,6 @@ from django.urls import reverse
 
 class TestComments(BaseTestMethods):
 
-    comment = {
-        "comment": {
-            "body": "This is another test comment."
-        }
-    }
-
-    comment2 = {
-        "body": "This is another test comment."
-    }
-
-    comment3 = {
-        "comment": {
-            "body": "This is another test comment."
-        }
-    }
-
-    def get_user_token(self):
-        user = self.register_and_loginUser()
-        return user.data['token']
-
-    def get_user2_token(self):
-        user = self.register_and_login_user2()
-        return user.data['token']
-
     def post_article(self):
         post_article_url = reverse(self.get_post_article_url)
         self.client.credentials(
@@ -48,7 +24,7 @@ class TestComments(BaseTestMethods):
             data=self.comment, format='json'
         )      
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual('This is another test comment.', response.data['comment']['body'])
+        self.assertEqual('This is a test comment.', response.data['comment']['body'])
 
     def test_posting_a_comment_twice(self):
         # user posting a comment twice.
@@ -99,8 +75,8 @@ class TestComments(BaseTestMethods):
             data=self.comment2, format='json'
         )
         self.assertEqual(response2.status_code, status.HTTP_200_OK)
-        self.assertEqual("This is another test comment.", str(
-                    response2.data['body']))
+        self.assertEqual(
+                "Comment updated successfully", response2.data['message'])
 
     def test_viewing_single_comment(self):
         # user updating a comment.
@@ -109,7 +85,8 @@ class TestComments(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + self.get_user2_token()
         )
         response = self.client.post(
-            "/api/v1/articles/" + article['slug'] + "/comments/", data=self.comment, format='json')
+            "/api/v1/articles/" + article['slug'] + "/comments/",
+                data=self.comment, format='json')
         response3 = self.client.get(
             "/api/v1/articles/" + article['slug'] + "/comments/"
             + str(response.data['comment']['id'])
@@ -117,8 +94,8 @@ class TestComments(BaseTestMethods):
         self.assertEqual(
             response3.status_code, status.HTTP_200_OK)
         self.assertIn(
-                "This is another test comment.", str(
-                    response3.data))                           
+                "This is a test comment.", str(
+                    response3.data['body']))                           
 
     def test_viewing_multiple_comments(self):
         # user updating a comment.
@@ -138,7 +115,7 @@ class TestComments(BaseTestMethods):
             "/api/v1/articles/" + article['slug'] + "/comments/")
         self.assertEqual( response3.status_code, status.HTTP_200_OK)
         self.assertIn(
-                "This is another test comment.", str(response3.data))
+                "This is a test comment.", str(response3.data))
 
     def test_deleting_comment_by_non_owner(self):
         # deleting a comment
