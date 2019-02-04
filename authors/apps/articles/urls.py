@@ -8,7 +8,7 @@ from .views import (
     FavoriteArticlesView,
     UnfavoriteArticleView,
     ArticleSearchListAPIView,
-    BookmarkArticleView, 
+    BookmarkArticleView,
     UnBookmarkArticleView,
     GetBookmarkArticle
 )
@@ -37,33 +37,33 @@ urlpatterns = [
         name="tags_list"
     ),
     path(
-            '<slug:slug>/favorite', 
-            FavoriteArticlesView.as_view(), 
-            name="favorite-articles"
-        ), 
+        '<slug:slug>/favorite',
+        FavoriteArticlesView.as_view(),
+        name="favorite-articles"
+    ),
     path(
-            '<slug:slug>/favorite/<int:pk>/', 
-            UnfavoriteArticleView.as_view(), 
-            name="unfavorite-articles"
-        ),
+        '<slug:slug>/favorite/<int:pk>/',
+        UnfavoriteArticleView.as_view(),
+        name="unfavorite-articles"
+    ),
     path(
         'search',
         ArticleSearchListAPIView.as_view(),
         name="search-article"
-        ), 
+    ),
     path(
-         '<slug:slug>/bookmark',
-         BookmarkArticleView.as_view(),
-         name="bookmark-articles"
-    ),   
+        '<slug:slug>/bookmark',
+        BookmarkArticleView.as_view(),
+        name="bookmark-articles"
+    ),
     path(
         '<slug:slug>/bookmark/<int:pk>',
         UnBookmarkArticleView.as_view(),
-        name ="unbookmark-articles"
+        name="unbookmark-articles"
     ),
     path(
         'bookmark/<int:pk>',
-         GetBookmarkArticle.as_view(),
-        name ="get-bookmark-articles"
+        GetBookmarkArticle.as_view(),
+        name="get-bookmark-articles"
     )
 ]
