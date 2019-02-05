@@ -19,6 +19,9 @@ from . import serializers
 from .renderers import ArticleJSONRenderer
 from authors.apps.core import authority
 from .search import ArticleFilter
+from authors.apps.articles.pagination import ArticlePagination
+from .search import ArticleFilter
+from authors.apps.articles.pagination import ArticlePagination
 
 
 class ListCreateArticle(generics.ListCreateAPIView):
@@ -27,6 +30,7 @@ class ListCreateArticle(generics.ListCreateAPIView):
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
     )
+    pagination_class = ArticlePagination
 
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
