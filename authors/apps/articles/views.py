@@ -7,6 +7,11 @@ from django.http import Http404
 from django.contrib.auth import get_user_model
 from rest_framework.filters import SearchFilter
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.permissions import IsAuthenticated
+from django.urls import reverse
+from authors.apps.profiles.models import Profile
+from django_social_share.templatetags import social_share
+
 
 from . import models
 from .models import Article, FavoriteArticle, BookmarkArticle
@@ -139,6 +144,63 @@ class UnfavoriteArticleView(generics.DestroyAPIView):
         )
 
 
+class ShareArticleView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def list(self, request, *args, **kwargs):
+        provider = kwargs.get('provider')
+        slug = kwargs.get('slug')
+        providers = ['facebook', 'email', 'twitter']
+
+        if provider not in providers:
+            return Response(
+                {'error': 'Invalid provider link'},
+                status=status.HTTP_400_BAD_REQUEST)
+        try:
+            article = Article.objects.get(slug=slug)
+        except Exception:
+            return Response({"message": "This article doesnot exist."},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        article_link = request.build_absolute_uri(
+            '/articles/{}/'.format(article.slug))
+
+        context = {'request': request}
+        user = Profile.objects.get(user=article.author_id)
+
+        subject = '{0} shared {1} with you.'.format(
+            user.first_name, article.title)
+
+        text = 'Read {0} shared by {1} {2}'.format(
+            article.title, user.first_name, user.last_name)
+
+        if provider == 'email':
+            link = social_share.send_email_url(
+                context, subject, text, article_link)['mailto_url']
+            return Response(
+                {
+                    'link': link,
+                    'provider': provider
+                },
+                status=status.HTTP_200_OK)
+        return Response(
+            {
+                'link': self.set_social_links(
+                    context, provider, article_link, args
+                ), 'provider': provider
+            }, status=status.HTTP_200_OK)
+
+    def set_social_links(self, context, provider, link, *args):
+
+        providers = {
+            'twitter': [social_share.post_to_twitter_url, 'tweet_url'],
+            'facebook': [social_share.post_to_facebook_url, 'facebook_url']
+        }
+        provider_link = providers.get(provider, providers['facebook'])
+
+        return provider_link[0](context, link)[provider_link[1]]
+
+
 class ArticleSearchListAPIView(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.ArticleSerializer
@@ -219,8 +281,6 @@ class UnBookmarkArticleView(generics.DestroyAPIView):
             }
 
         )
-
-
 class GetBookmarkArticle(generics.RetrieveAPIView):
     queryset = models.BookmarkArticle.objects.all()
     serializer_class = serializers.BookmarkSerializer

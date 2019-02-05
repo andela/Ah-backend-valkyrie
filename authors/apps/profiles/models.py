@@ -15,7 +15,6 @@ class Profile(models.Model):
     country = models.CharField(max_length=50, blank=True)
     bio = models.TextField(blank=True)
     image = models.URLField(blank=True)
-    following = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
 

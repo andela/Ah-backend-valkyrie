@@ -10,7 +10,8 @@ from .views import (
     ArticleSearchListAPIView,
     BookmarkArticleView,
     UnBookmarkArticleView,
-    GetBookmarkArticle
+    GetBookmarkArticle,
+    ShareArticleView
 )
 
 
@@ -65,5 +66,10 @@ urlpatterns = [
         'bookmark/<int:pk>',
         GetBookmarkArticle.as_view(),
         name="get-bookmark-articles"
-    )
+    ),
+    path(
+        '<slug:slug>/share/<str:provider>/',
+        ShareArticleView.as_view(),
+        name="share-article"
+    ),
 ]

@@ -39,3 +39,5 @@ google-auth
 django_currentuser
 django-filter
 readtime
+django-social-share
+
