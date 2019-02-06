@@ -34,3 +34,12 @@ class FavoriteHelper:
                 raise NotFound(detail=msg, code=status.HTTP_404_NOT_FOUND)
 
         return article    
+
+
+class StatsHelper:
+
+    def read_count(self, **kwargs):
+        count_reads = kwargs.get('model').objects.all().filter(
+            article=kwargs.get('article_id')
+        )
+        return len(count_reads)

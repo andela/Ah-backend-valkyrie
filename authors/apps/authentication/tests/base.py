@@ -47,6 +47,7 @@ class BaseTestMethods(APITestCase):
         self.single_article_url = "articles:article_detail"
         self.get_author_articles = "articles:author_articles"
         self.get_tags_url = "articles:tags_list"
+        self.get_user_stats = "articles:reading-stats"
 
         self.model =   FavoriteArticle
         self.model2 = Article
@@ -73,6 +74,7 @@ class BaseTestMethods(APITestCase):
                 "body": "Updated this test comment."
             }
         }
+        
         
     def create_user(self, data):
         """

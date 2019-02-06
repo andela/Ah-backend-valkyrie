@@ -7,7 +7,13 @@ from rest_framework import status
 
 from authors.apps.authentication.serializers import UserSerializer
 from authors.apps.profiles.serializers import ProfileSerializer
-from .models import Article, Tag, FavoriteArticle, BookmarkArticle
+from .models import (
+    Article,
+    Tag,
+    FavoriteArticle,
+    BookmarkArticle,
+    ReadingStats
+)
 from ..comments.serializers import CommentSerializer
 
 
@@ -58,6 +64,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             'favorites_count',
             'read_time',
             'comments',
+            'read_count',
         )
         model = Article
         read_only_fields = ('author', 'comments')
@@ -90,9 +97,20 @@ class FavoriteArticleSerializer(serializers.ModelSerializer):
 class BookmarkSerializer(serializers.ModelSerializer):
     article = ArticleSerializer(required=False)
 
-    class Meta:
+    class Meta: 
         fields = (
             'id',
             'article',
-        )
+            )
         model = BookmarkArticle
+
+
+
+class ReadingStatSerializer(serializers.ModelSerializer):
+    article = ArticleSerializer(required=False)
+    class Meta:
+        fields = (
+            'article',
+            'read_on',
+        )
+        model = ReadingStats

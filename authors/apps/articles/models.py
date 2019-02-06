@@ -2,7 +2,7 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
-from .helper import FavoriteHelper
+from .helper import FavoriteHelper, StatsHelper
 from django_currentuser.middleware import get_current_user
 
 from authors.apps.ratings.utils import fetch_rating_average
@@ -20,7 +20,8 @@ class Tag(models.Model):
 
 class Article(models.Model):
     favorite_helper = FavoriteHelper()
-
+    read_helper = StatsHelper()
+    
     title = models.CharField(max_length=100)
     slug = models.SlugField(null=True)
     description = models.CharField(max_length=300)
@@ -60,10 +61,17 @@ class Article(models.Model):
             user_id=get_current_user().id
         )
 
-    @property
+    @property 
     def favorites_count(self):
         return self.favorite_helper.favorite_count(
             model=FavoriteArticle,
+            article_id=self.pk
+        )
+
+    @property
+    def read_count(self):
+        return self.read_helper.read_count(
+            model=ReadingStats,
             article_id=self.pk
         )
 
@@ -84,7 +92,7 @@ class FavoriteArticle(models.Model):
         on_delete=models.CASCADE, null=True
     )
     Timestamp = models.DateTimeField(auto_now=True)
-
+  
     def __str__(self):
         return self.article
 
@@ -95,3 +103,11 @@ class BookmarkArticle(models.Model):
         get_user_model(), on_delete=models.CASCADE,
         null=True
     )
+class ReadingStats(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, null=True)
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        null=True
+    )
+    read_on = models.DateTimeField(auto_now=True)
