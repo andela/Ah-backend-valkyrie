@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
@@ -7,6 +6,7 @@ from django_currentuser.middleware import get_current_user
 
 from authors.apps.ratings.utils import fetch_rating_average
 from authors.apps.ratings.models import Rating
+from .helper import LikeHelper
 
 
 class Tag(models.Model):
@@ -19,6 +19,7 @@ class Tag(models.Model):
 
 
 class Article(models.Model):
+    helper = LikeHelper()
     favorite_helper = FavoriteHelper()
     read_helper = StatsHelper()
     
@@ -74,6 +75,29 @@ class Article(models.Model):
             model=ReadingStats,
             article_id=self.pk
         )
+
+    def likes(self):
+        return self.helper.get_likes_or_dislike(
+            model=LikeArticle,
+            like=True,
+            article_id=self.pk
+        )
+
+    @property
+    def dislikes(self):
+        return self.helper.get_likes_or_dislike(
+            model=LikeArticle,
+            like=False,
+            article_id=self.pk
+        )
+
+
+class LikeArticle(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    like = models.BooleanField(default=False)
+    created_at = models.DateField(auto_now_add=True)
+    modified_at = models.DateField(auto_now=True)
 
 
 class ArticleImage(models.Model):

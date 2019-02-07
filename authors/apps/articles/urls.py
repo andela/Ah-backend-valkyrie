@@ -4,9 +4,10 @@ from .views import (
     ListCreateArticle,
     RetrieveUpdateDestroyArticle,
     RetrieveAuthorArticles,
-    ListTag,
     FavoriteArticlesView,
     UnfavoriteArticleView,
+    ListTag,
+    LikeArticleAPIView,
     ArticleSearchListAPIView,
     BookmarkArticleView,
     UnBookmarkArticleView,
@@ -14,6 +15,7 @@ from .views import (
     ShareArticleView,
     ReadingStatsView,
     HighlightListCreate,
+    DislikeArticleAPIView
 )
 
 
@@ -48,6 +50,16 @@ urlpatterns = [
         '<slug:slug>/favorite/<int:pk>/',
         UnfavoriteArticleView.as_view(),
         name="unfavorite-articles"
+    ),
+    path(
+        '<slug:slug>/like',
+        LikeArticleAPIView.as_view(),
+        name="like-article"
+    ),
+    path(
+        '<slug:slug>/dislike',
+        DislikeArticleAPIView.as_view(),
+        name="dislike-article"
     ),
     path(
         'search',

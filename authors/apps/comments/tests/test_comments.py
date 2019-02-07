@@ -10,7 +10,7 @@ class TestComments(BaseTestMethods):
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + self.get_user_token())
         article = self.client.post(
-            post_article_url,data=self.article, format='json')
+            post_article_url, data=self.article, format='json')
         return article.data
 
     def test_posting_a_comment(self):
@@ -22,9 +22,10 @@ class TestComments(BaseTestMethods):
         response = self.client.post(
             "/api/v1/articles/" + article['slug'] + "/comments/",
             data=self.comment, format='json'
-        )      
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual('This is a test comment.', response.data['comment']['body'])
+        self.assertEqual('This is a test comment.',
+                         response.data['comment']['body'])
 
     def test_posting_a_comment_twice(self):
         # user posting a comment twice.
@@ -39,8 +40,8 @@ class TestComments(BaseTestMethods):
         self.assertEqual(
             response.status_code, status.HTTP_409_CONFLICT)
         self.assertEqual(
-                "You can't give the same comment twice on the same article",
-                    response.data['message'])
+            "You can't give the same comment twice on the same article",
+            response.data['message'])
 
     def test_deleting_comment(self):
         # deleting a comment
@@ -48,14 +49,14 @@ class TestComments(BaseTestMethods):
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + self.get_user2_token()
         )
-        response= self.client.post(
+        response = self.client.post(
             "/api/v1/articles/" + article['slug'] + "/comments/",
             data=self.comment, format='json'
         )
         response2 = self.client.delete(
             "/api/v1/articles/" + article['slug'] + "/comments/"
             + str(response.data['comment']['id']), format='json'
-        )            
+        )
         self.assertEqual(
             response2.status_code, status.HTTP_204_NO_CONTENT)
 
@@ -76,7 +77,7 @@ class TestComments(BaseTestMethods):
         )
         self.assertEqual(response2.status_code, status.HTTP_200_OK)
         self.assertEqual(
-                "Comment updated successfully", response2.data['message'])
+            "Comment updated successfully", response2.data['message'])
 
     def test_viewing_single_comment(self):
         # user updating a comment.
@@ -86,7 +87,7 @@ class TestComments(BaseTestMethods):
         )
         response = self.client.post(
             "/api/v1/articles/" + article['slug'] + "/comments/",
-                data=self.comment, format='json')
+            data=self.comment, format='json')
         response3 = self.client.get(
             "/api/v1/articles/" + article['slug'] + "/comments/"
             + str(response.data['comment']['id'])
@@ -94,8 +95,8 @@ class TestComments(BaseTestMethods):
         self.assertEqual(
             response3.status_code, status.HTTP_200_OK)
         self.assertIn(
-                "This is a test comment.", str(
-                    response3.data['body']))                           
+            "This is a test comment.", str(
+                response3.data['body']))
 
     def test_viewing_multiple_comments(self):
         # user updating a comment.
@@ -113,9 +114,9 @@ class TestComments(BaseTestMethods):
         )
         response3 = self.client.get(
             "/api/v1/articles/" + article['slug'] + "/comments/")
-        self.assertEqual( response3.status_code, status.HTTP_200_OK)
+        self.assertEqual(response3.status_code, status.HTTP_200_OK)
         self.assertIn(
-                "This is a test comment.", str(response3.data))
+            "This is a test comment.", str(response3.data))
 
     def test_deleting_comment_by_non_owner(self):
         # deleting a comment
@@ -133,6 +134,6 @@ class TestComments(BaseTestMethods):
         response2 = self.client.delete(
             "/api/v1/articles/" + article['slug'] + "/comments/"
             + str(response.data['comment']['id'])
-        )            
+        )
         self.assertEqual(
             response2.status_code, status.HTTP_403_FORBIDDEN)

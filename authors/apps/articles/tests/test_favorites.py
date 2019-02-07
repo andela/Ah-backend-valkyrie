@@ -135,7 +135,7 @@ class FavoriteTestCase(BaseTestMethods):
         #create article
         response =self.favorite_article()
         user = get_current_user().id  
-        article_id = self.favorite.get_article_by_slug(
+        article_id = self.like_helper_class.get_article_by_slug(
             model=self.model2,
             slug=response.data['article']['slug']
         )
@@ -148,7 +148,7 @@ class FavoriteTestCase(BaseTestMethods):
             #create article
         article =self.create_article()
         user = get_current_user().id  
-        article_id = self.favorite.get_article_by_slug(
+        article_id = self.like_helper_class.get_article_by_slug(
             model=self.model2,
             slug=article.data['slug']
         )
@@ -159,7 +159,7 @@ class FavoriteTestCase(BaseTestMethods):
     
     def test_favorite_count(self):
         response =self.favorite_article() 
-        article_id = self.favorite.get_article_by_slug(
+        article_id = self.like_helper_class.get_article_by_slug(
             model=self.model2,
             slug=response.data['article']['slug']
         )
@@ -171,7 +171,7 @@ class FavoriteTestCase(BaseTestMethods):
          #create article
         article =self.create_article()
         user = get_current_user().id  
-        article_id = self.favorite.get_article_by_slug(
+        article_id = self.like_helper_class.get_article_by_slug(
             model=self.model2,
             slug=article.data['slug']
         )
@@ -182,8 +182,7 @@ class FavoriteTestCase(BaseTestMethods):
     def test_get_article_by_slug(self):
         #create article
         article =self.create_article()
-        print(article.data)
-        response = self.favorite.get_article_by_slug(
+        response = self.like_helper_class.get_article_by_slug(
             model=self.model2,
             slug=article.data['slug']
         )

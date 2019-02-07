@@ -88,7 +88,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # The `is_staff` flag is expected by Django to determine who can and cannot
     # log into the Django admin site. For most users, this flag will always be
     # falsed.
-    
+
     # The `is_staff` flag is expected by Django to determine who can and cannot
     # log into the Django admin site. For most users, this flag will always be
     # falsed.
@@ -161,4 +161,3 @@ class User(AbstractBaseUser, PermissionsMixin):
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     Token.objects.get_or_create(user=instance)
-

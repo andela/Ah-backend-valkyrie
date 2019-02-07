@@ -29,6 +29,8 @@ class CommentReaction(models.Model):
 
     def __str__(self):
         return self.like
+
+
 class CommentHistory(models.Model):
     body = models.TextField()
     comment = models.ForeignKey(

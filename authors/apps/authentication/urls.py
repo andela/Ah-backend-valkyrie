@@ -4,12 +4,12 @@ from .views import (
     LoginAPIView,
     RegistrationAPIView,
     UserRetrieveUpdateAPIView,
-	UserAccountVerificationAPIView,
+    UserAccountVerificationAPIView,
     UserPasswordResetConfirmAPIView,
-	UserPasswordResetRequestAPIView,
+    UserPasswordResetRequestAPIView,
     UsersListAPIView,
 )
-   
+
 
 urlpatterns = [
     path(
@@ -18,7 +18,7 @@ urlpatterns = [
         name='update-retrieve-user'
     ),
     path(
-        'users/register', 
+        'users/register',
         RegistrationAPIView.as_view(),
         name='user-registration'),
     path(
@@ -27,12 +27,12 @@ urlpatterns = [
         name='user-login'
     ),
     path(
-        'users/', 
-        UsersListAPIView.as_view(), 
+        'users/',
+        UsersListAPIView.as_view(),
         name='list-users-functionality'),
     path(
-        'users/verify-account/<str:token>/<str:email>', 
-        UserAccountVerificationAPIView.as_view(), 
+        'users/verify-account/<str:token>/<str:email>',
+        UserAccountVerificationAPIView.as_view(),
         name='user-account-verification'
     ),
     path(

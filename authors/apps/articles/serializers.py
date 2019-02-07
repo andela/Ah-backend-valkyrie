@@ -1,6 +1,6 @@
 import readtime
 import json
-from rest_framework import serializers
+from rest_framework import serializers, status
 from django.db import models
 from django.template.defaultfilters import slugify
 from rest_framework import status
@@ -14,6 +14,7 @@ from .models import (
     BookmarkArticle,
     ReadingStats,
     HighlightedText,
+    LikeArticle
 )
 from ..comments.serializers import CommentSerializer
 
@@ -61,6 +62,8 @@ class ArticleSerializer(serializers.ModelSerializer):
             'createdAt',
             'updatedAt',
             'author',
+            'likes',
+            'dislikes',
             'favorited',
             'favorites_count',
             'read_time',
@@ -82,6 +85,31 @@ class ArticleSerializer(serializers.ModelSerializer):
     def get_read_time(self, instance):
         post = instance.body
         return str(readtime.of_text(post))
+
+
+class LikeArticleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LikeArticle
+        fields = ['article', 'user', 'like', 'modified_at']
+
+    def create(self, validated_data):
+        try:
+            self.instance = LikeArticle.objects.get(
+                article_id=validated_data.get('article'),
+                user_id=validated_data.get('user')
+            )
+        except Exception:
+            return LikeArticle.objects.create(**validated_data)
+        return self._update_like(validated_data)
+
+    def _update_like(self, validated_date):
+        if self.instance.like == validated_date.get('like'):
+            self.instance.delete()
+        else:
+            self.instance.like = validated_date.get('like')
+            self.instance.save()
+        return self.instance
 
 
 class FavoriteArticleSerializer(serializers.ModelSerializer):

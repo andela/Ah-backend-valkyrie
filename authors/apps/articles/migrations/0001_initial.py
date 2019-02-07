@@ -85,6 +85,20 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now=True)),
             ],
         ),
+        migrations.CreateModel(
+            name='LikeArticle',
+            fields=[
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('like', models.BooleanField(default=False)),
+                ('created_at', models.DateField(auto_now_add=True)),
+                ('modified_at', models.DateField(auto_now=True)),
+                ('article', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='articles.Article')),
+                ('user', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
         migrations.AddField(
             model_name='article',
             name='tagList',
