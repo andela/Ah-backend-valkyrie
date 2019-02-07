@@ -13,6 +13,7 @@ from .views import (
     GetBookmarkArticle,
     ShareArticleView,
     ReadingStatsView,
+    HighlightListCreate,
 )
 
 
@@ -78,4 +79,9 @@ urlpatterns = [
         ReadingStatsView.as_view(), 
         name="reading-stats"
     ),
+    path(
+        '<slug:slug>/highlight',
+        HighlightListCreate.as_view(),
+        name="article_highlight"
+    )
 ]

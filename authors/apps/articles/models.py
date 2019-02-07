@@ -111,3 +111,19 @@ class ReadingStats(models.Model):
         null=True
     )
     read_on = models.DateTimeField(auto_now=True)
+class HighlightedText(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, null=True)
+    author = models.ForeignKey(
+        get_user_model(), 
+        on_delete=models.CASCADE, null=True
+    )
+    startIndex = models.IntegerField()
+    endIndex = models.IntegerField()
+    comment = models.TextField(blank=True)
+    created = models.DateTimeField(auto_now=True)
+
+    @property 
+    def selected_text(self):
+        return Article.objects.get(
+            id=self.article_id
+        ).body[self.startIndex:self.endIndex]
