@@ -11,6 +11,9 @@ from .renderers import (ProfileJSONRenderer,
                         FollowingsJSONRenderer, FollowJSONRenderer)
 from .exceptions import ProfileDoesNotExist
 
+from django.core.mail import EmailMessage
+from notifications.models import Notification
+
 
 class ProfileRetrieveAPIView(RetrieveAPIView):
     serializer_class = ProfileSerializer
@@ -43,6 +46,20 @@ class ProfileFollowAPIView(GenericAPIView):
         if follower.pk is followee.pk:
             raise PermissionDenied('You cannot follow yourself.')
         follower.follow(followee)
+
+        # Email notification setup
+        subject = 'New Follower'
+        message = 'This is your lucky day, {} is now following you'.format(
+            follower.user.username)
+        # Notification setup
+        notification = Notification.objects.create(
+            actor=follower.user, recipient=followee.user,
+            verb=subject)
+
+        to = followee.user.email
+        email = EmailMessage(subject, message, to=[to])
+        email.content_subtype = 'html'
+        email.send()
 
         serializer = self.serializer_class(followee, context={
             'request': request

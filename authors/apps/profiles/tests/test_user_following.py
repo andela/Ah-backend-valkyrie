@@ -6,6 +6,8 @@ from authors.apps.authentication.tests.base import BaseTestMethods
 from authors.apps.authentication.models import User
 from ..models import Profile
 
+from django.core import mail
+
 
 class TestUserFollowing(BaseTestMethods):
 
@@ -23,6 +25,8 @@ class TestUserFollowing(BaseTestMethods):
             json.loads(response.content)[
                 'profile']['following'], True
         )
+
+        self.assertEqual(len(mail.outbox), 3)
 
     def test_a_registered_user_can_unfollow_a_user_they_follow(self):
         user_1 = self.register_and_loginUser()
