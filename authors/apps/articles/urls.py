@@ -15,7 +15,8 @@ from .views import (
     ShareArticleView,
     ReadingStatsView,
     HighlightListCreate,
-    DislikeArticleAPIView
+    DislikeArticleAPIView,
+    ReportArticleAPIView
 )
 
 
@@ -30,6 +31,11 @@ urlpatterns = [
         '<slug:slug>/',
         RetrieveUpdateDestroyArticle.as_view(),
         name="article_detail"
+    ),
+    path(
+        'author/<int:pk>/',
+        RetrieveAuthorArticles.as_view(),
+        name="author_articles"
     ),
     path(
         'author/<str:username>/',
@@ -87,13 +93,28 @@ urlpatterns = [
         name="share-article"
     ),
     path(
-        'stats', 
-        ReadingStatsView.as_view(), 
+        'stats',
+        ReadingStatsView.as_view(),
         name="reading-stats"
     ),
     path(
         '<slug:slug>/highlight',
         HighlightListCreate.as_view(),
         name="article_highlight"
+    ),
+    path(
+        '<slug:slug>/report',
+        ReportArticleAPIView.as_view(),
+        name='report-article'
+    ),
+    path(
+        'reported',
+        ReportArticleAPIView.as_view(),
+        name='reported-articles'
+    ),
+    path(
+        'search',
+        ArticleSearchListAPIView.as_view(),
+        name="search-article"
     )
 ]

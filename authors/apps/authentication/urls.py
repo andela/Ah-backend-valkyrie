@@ -7,7 +7,7 @@ from .views import (
     UserAccountVerificationAPIView,
     UserPasswordResetConfirmAPIView,
     UserPasswordResetRequestAPIView,
-    UsersListAPIView,
+    UsersListAPIView
 )
 
 
@@ -22,7 +22,8 @@ urlpatterns = [
     path(
         'users/register',
         RegistrationAPIView.as_view(),
-        name='user-registration'),
+        name='user-registration'
+    ),
     path(
         'users/login/',
         LoginAPIView.as_view(),
@@ -40,9 +41,11 @@ urlpatterns = [
     path(
         'users/reset_password_confirm/<str:token>',
         UserPasswordResetConfirmAPIView.as_view(),
-        name='reset_password_confirm'),
+        name='reset_password_confirm'
+    ),
     path(
         'users/reset_password',
         UserPasswordResetRequestAPIView.as_view(),
-        name='reset_password'),
+        name='reset_password'
+    ),
 ]

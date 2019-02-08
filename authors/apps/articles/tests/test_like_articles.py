@@ -34,13 +34,12 @@ class TestLikeArticle(BaseTestMethods):
             HTTP_AUTHORIZATION='Bearer ' + user.data.get('token'))
         response = self.client.post(url, data=self.article, format='json')
         data = {
-            'slug': response.data.get('slug'),
-            'like': True
+            'slug': response.data.get('slug')
         }
-        like_url = reverse('articles:like-article')
-        self.client.post(like_url, data=data, format='json')
+        like_url = reverse('articles:like-article', kwargs=data)
+        self.client.post(like_url)
         #  Like same article a second time
-        res = self.client.post(like_url, data=data, format='json')
+        res = self.client.post(like_url)
         self.assertTrue(res.data.get('like'), True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 

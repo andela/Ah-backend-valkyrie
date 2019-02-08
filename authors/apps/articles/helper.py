@@ -6,6 +6,15 @@ from rest_framework import status
 class LikeHelper:
 
     def get_likes_or_dislike(self, **kwargs):
+        """
+        Counts the like and dislikes for an article
+        Args:
+            model(LikeArticle): LikeArticle model
+            like(bool): True for like, False for dislike
+            article_id(int): Article pk
+        Returns:
+            dict: With like count and a list of users who liked
+        """
         likes = kwargs.get('model').objects.all().filter(
             like=kwargs.get('like')
         )
@@ -19,6 +28,10 @@ class LikeHelper:
         """
         Retrieves a list of users who liked or disliked a
         particular article
+        Args:
+            filtered_list(queryset): List of all likes for a particular article
+        Returns:
+            list: List of username
         """
 
         usernames = []
@@ -29,6 +42,15 @@ class LikeHelper:
         return usernames
 
     def get_article_by_slug(self, **kwargs):
+        """
+        Retrieves a user using the unique slug
+        Args:
+            slug(str): Article slug
+            model(object): Article object
+        Returns:
+            Article if successful, None otherwise
+        """
+
         if kwargs.get('slug') and len(kwargs.get('slug').strip(' ')) > 0:
             try:
                 self.article = kwargs.get('model').objects.get(
@@ -68,3 +90,15 @@ class FavoriteHelper:
             article=kwargs.get('article_id')
         )
         return len(count_favorite)
+
+
+class ReportArticleHelper:
+
+    def get_all_reports(self, **kwargs):
+        return kwargs.get('model').objects.all()
+
+    def get_reports_for_single_article(self, **kwargs):
+        reports = kwargs.get('model').objects.all().filter(
+            article_id=kwargs.get('article')
+        )
+        return reports

@@ -1,5 +1,4 @@
 import jwt
-from datetime import datetime
 import datetime
 from django.conf import settings
 
