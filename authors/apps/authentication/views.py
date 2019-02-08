@@ -23,7 +23,7 @@ from django.urls import reverse
 from django.conf import settings
 
 
-class RegistrationAPIView(APIView):
+class RegistrationAPIView(GenericAPIView):
     # Allow any user (authenticated or not) to hit this endpoint.
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
@@ -65,7 +65,7 @@ class RegistrationAPIView(APIView):
         return email_template(subject, content, user.email)
 
 
-class UserAccountVerificationAPIView(APIView):
+class UserAccountVerificationAPIView(GenericAPIView):
     # Allow any user (authenticated or not) to hit this endpoint.
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
@@ -104,8 +104,8 @@ class UsersListAPIView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-
-class LoginAPIView(APIView):
+    
+class LoginAPIView(GenericAPIView):
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
     serializer_class = LoginSerializer
@@ -124,6 +124,7 @@ class LoginAPIView(APIView):
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
+    queryset = User.objects.all()
     renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)

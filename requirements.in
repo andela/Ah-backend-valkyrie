@@ -40,4 +40,5 @@ django_currentuser
 django-filter
 readtime
 django-social-share
-
+drf_yasg
+swagger-py-codegen
