@@ -71,6 +71,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_currentuser.middleware.ThreadLocalUserMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'authors.urls'
@@ -205,6 +206,8 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 REDOC_SETTINGS = {
     'LAZY_RENDERING': False,
