@@ -87,13 +87,18 @@ class ArticleSerializer(serializers.ModelSerializer):
         read_only_fields = ('author', 'comments')
 
     def create(self, validated_data):
-        tagList = validated_data.pop('tagList')
-        article = Article.objects.create(**validated_data)
-        for tag in tagList:
-            tag_obj = Tag.objects.get(id=tag.id)
-            article.tagList.add(tag_obj)
+        try:
+            tagList = validated_data.pop('tagList')
+            article = Article.objects.create(**validated_data)
+            for tag in tagList:
+                tag_obj = Tag.objects.get(id=tag.id)
+                article.tagList.add(tag_obj)
 
-        return article
+            return article
+        except KeyError as identifier:
+            raise serializers.ValidationError({
+                'tagList': 'Please provide a list of tags'
+            })
 
     def get_read_time(self, instance):
         post = instance.body
@@ -139,7 +144,7 @@ class FavoriteArticleSerializer(serializers.ModelSerializer):
 class BookmarkSerializer(serializers.ModelSerializer):
     article = ArticleSerializer(required=False)
 
-    class Meta: 
+    class Meta:
         fields = (
             'id',
             'article',
@@ -158,8 +163,8 @@ class ReadingStatSerializer(serializers.ModelSerializer):
         model = ReadingStats
         article = ArticleSerializer(required=False)
         class Meta:
-            fields = ( 
-                'id' ,     
+            fields = (
+                'id' ,
                 'article',
             )
             model = FavoriteArticle
@@ -167,7 +172,7 @@ class ReadingStatSerializer(serializers.ModelSerializer):
 class HighlightSerializer(serializers.ModelSerializer):
         author = UserSerializer(required=False)
         class Meta:
-            fields = ( 
+            fields = (
                 'id' ,
                 'author',
                 'startIndex',
@@ -185,7 +190,7 @@ class HighlightSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
 	                'slug': 'Please provide a slug'
 	            })
-            
+
             article_id = validated_data.pop('article')
             article = Article.objects.get(slug=article_slug)
             article_text = article.body
@@ -210,6 +215,6 @@ class HighlightSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
 	                'highlight': 'Not a valid highlight'
 	            })
-            
+
             highlight = HighlightedText.objects.create(**validated_data)
             return highlight
