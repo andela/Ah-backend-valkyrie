@@ -44,6 +44,19 @@ class TagRelatedField(serializers.RelatedField):
         """
         return value.tag
 
+class ArticleImageRelatedField(serializers.RelatedField):
+
+    def get_queryset(self):
+        return BlogImage.objects.all()
+
+    def to_internal_value(self, data):
+        image = BlogImage.objects.create(image=data)
+
+        return image[0]
+
+    def to_representation(self, value):
+        return value.image
+
 
 class ArticleSerializer(serializers.ModelSerializer):
     author = UserSerializer(required=False)

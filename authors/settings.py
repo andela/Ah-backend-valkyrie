@@ -146,8 +146,8 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:4000',
 )
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'authors/apps/articles/')
+MEDIA_URL = ''
 FACEBOOK_APP_ID = '282774432595037'
 FACEBOOK_APP_SECRET = '6690f47e6f7eff6390053a440066d661'
 

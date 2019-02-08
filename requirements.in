@@ -30,7 +30,6 @@ typed-ast
 urllib3
 whitenoise
 wrapt
-Pillow
 python-twitter
 facebook-sdk
 google-auth-httplib2
