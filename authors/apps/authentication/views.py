@@ -69,6 +69,13 @@ class RegistrationAPIView(GenericAPIView):
         return email_template(subject, content, user.email)
 
 
+class UsersListAPIView(ListAPIView):
+    # Allow any user (authenticated or not) to hit this endpoint.
+    permission_classes = (AllowAny,)
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
 class UserAccountVerificationAPIView(GenericAPIView):
     # Allow any user (authenticated or not) to hit this endpoint.
     permission_classes = (AllowAny,)
