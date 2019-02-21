@@ -1,5 +1,5 @@
 import jwt
-
+from django.shortcuts import redirect
 from rest_framework import status
 from rest_framework.generics import (
     RetrieveUpdateAPIView,
@@ -183,6 +183,7 @@ class UserPasswordResetRequestAPIView(GenericAPIView):
     renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
 
+   
     def post(self, request, **kwargs):
         """reset password email template"""
         email = request.data.get('email')
@@ -207,10 +208,11 @@ class UserPasswordResetRequestAPIView(GenericAPIView):
             'reset_password_confirm',
             kwargs={"token": token}
         )
+        # reset_url = protocol + 'localhost:8080/change_password/'+token
         subject, to = ('Valkyrie-Authors-Haven Password Reset', email)
 
         html_content = "<p>Click on this <a href='" + \
-            reset_url + "'>Link<a> to reset your password</p> " + reset_url
+            reset_url + "'>Link<a> to reset your password</p> "
 
         email_template(subject, html_content, to)
 
@@ -219,12 +221,16 @@ class UserPasswordResetRequestAPIView(GenericAPIView):
                 "message":
                 "A password reset email has been sent to your email account!"},
             status=status.HTTP_200_OK)
-
+    
 
 class UserPasswordResetConfirmAPIView(GenericAPIView):
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
+
+    def get(self, request, **kwargs):
+        response = redirect(settings.HOST +"/change_password/"+ kwargs.get('token'))
+        return response
 
     def put(self, request, token):
         """update user password"""
