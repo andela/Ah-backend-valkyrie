@@ -20,5 +20,5 @@ class UserJSONRenderer(JSONRenderer):
 
         # Finally, we can render our data under the "user" namespace.
         return json.dumps({
-            'user': data
+            'profile': data
         })

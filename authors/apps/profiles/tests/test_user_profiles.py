@@ -61,7 +61,7 @@ class TestUserProfile(BaseTestMethods):
             HTTP_AUTHORIZATION=f'Bearer {token}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content)[
-                         'user']['bio'], "I love music")
+                         'profile']['bio'], "I love music")
 
     def test_user_cannot_update_another_users_profile(self):
         owner = self.register_and_loginUser()
@@ -82,6 +82,6 @@ class TestUserProfile(BaseTestMethods):
             HTTP_AUTHORIZATION=f'Bearer {owner_token}')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
-            json.loads(response.content)['user']['detail'],
+            json.loads(response.content)['profile']['detail'],
             "You are not allowed perform this action"
         )
