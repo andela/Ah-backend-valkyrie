@@ -8,7 +8,7 @@ from .models import Rating
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        fields = ('id', 'points',)
+        fields = ('id', 'points', 'rater', 'article')
 
 
 class CreateRatingSerializer(serializers.ModelSerializer):
