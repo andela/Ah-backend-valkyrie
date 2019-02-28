@@ -19,7 +19,7 @@ from authors.apps.profiles.models import Profile
 
 from django.core.mail import send_mass_mail
 
-from authors.apps.ratings.utils import fetch_rating_average
+from authors.apps.ratings.utils import fetch_rating_average, get_user_ratings
 from authors.apps.ratings.models import Rating
 
 
@@ -105,6 +105,14 @@ class Article(models.Model):
             article_id=self.pk
         )
 
+    @property
+    def points(self):
+        return get_user_ratings(
+            model=Rating,
+            article_id=self.pk,
+            rater_id=get_current_user().id
+        )
+
 
 class LikeArticle(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
@@ -184,7 +192,7 @@ def article_notifications_handler(sender, **kwargs):
 
     Notifier.batch_follower_email_notifier(
         author, followers, article_url=article_url, url=url)
-    
+
 
 class ReportArticle(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)

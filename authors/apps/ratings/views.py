@@ -1,7 +1,7 @@
 from .models import Rating
 from .serializers import CreateRatingSerializer, RatingSerializer
 from authors.apps.articles.models import Article
-from authors.apps.ratings.utils import fetch_rating_average
+from authors.apps.ratings.utils import fetch_rating_average, get_user_ratings
 
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
