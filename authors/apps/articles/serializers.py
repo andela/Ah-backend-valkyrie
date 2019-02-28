@@ -46,6 +46,7 @@ class TagRelatedField(serializers.RelatedField):
         """
         return value.tag
 
+
 class ArticleImageRelatedField(serializers.RelatedField):
 
     def get_queryset(self):
@@ -84,6 +85,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             'read_time',
             'comments',
             'read_count',
+            'points',
         )
         model = Article
         read_only_fields = ('author', 'comments')
@@ -150,13 +152,13 @@ class BookmarkSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'article',
-            )
+        )
         model = BookmarkArticle
-
 
 
 class ReadingStatSerializer(serializers.ModelSerializer):
     article = ArticleSerializer(required=False)
+
     class Meta:
         fields = (
             'article',
@@ -164,62 +166,65 @@ class ReadingStatSerializer(serializers.ModelSerializer):
         )
         model = ReadingStats
         article = ArticleSerializer(required=False)
+
         class Meta:
             fields = (
-                'id' ,
+                'id',
                 'article',
             )
             model = FavoriteArticle
 
+
 class HighlightSerializer(serializers.ModelSerializer):
-        author = UserSerializer(required=False)
-        class Meta:
-            fields = (
-                'id' ,
-                'author',
-                'startIndex',
-                'endIndex',
-                'created',
-                'selected_text',
-                'comment',
-            )
-            model = HighlightedText
+    author = UserSerializer(required=False)
 
-        def create(self, validated_data):
-            try:
-                article_slug = self.context["slug"]
-            except KeyError as e:
-                raise serializers.ValidationError({
-	                'slug': 'Please provide a slug'
-	            })
+    class Meta:
+        fields = (
+            'id',
+            'author',
+            'startIndex',
+            'endIndex',
+            'created',
+            'selected_text',
+            'comment',
+        )
+        model = HighlightedText
 
-            article_id = validated_data.pop('article')
-            article = Article.objects.get(slug=article_slug)
-            article_text = article.body
-            startIndex = int(validated_data.pop('startIndex'))
-            endIndex = int(validated_data.pop('endIndex'))
+    def create(self, validated_data):
+        try:
+            article_slug = self.context["slug"]
+        except KeyError as e:
+            raise serializers.ValidationError({
+                'slug': 'Please provide a slug'
+            })
 
-            # reassign values if endIndex is greater
-            if startIndex > endIndex:
-                print(startIndex)
-                temp_startIndex = startIndex
-                temp_endIndex = endIndex
+        article_id = validated_data.pop('article')
+        article = Article.objects.get(slug=article_slug)
+        article_text = article.body
+        startIndex = int(validated_data.pop('startIndex'))
+        endIndex = int(validated_data.pop('endIndex'))
 
-                startIndex = temp_endIndex
-                endIndex = temp_startIndex
+        # reassign values if endIndex is greater
+        if startIndex > endIndex:
+            print(startIndex)
+            temp_startIndex = startIndex
+            temp_endIndex = endIndex
 
-            validated_data['startIndex'] = startIndex
-            validated_data['endIndex'] = endIndex
-            validated_data['article'] = article
+            startIndex = temp_endIndex
+            endIndex = temp_startIndex
 
-            selectedText = article_text[startIndex:endIndex]
-            if selectedText == "":
-                raise serializers.ValidationError({
-	                'highlight': 'Not a valid highlight'
-	            })
+        validated_data['startIndex'] = startIndex
+        validated_data['endIndex'] = endIndex
+        validated_data['article'] = article
 
-            highlight = HighlightedText.objects.create(**validated_data)
-            return highlight
+        selectedText = article_text[startIndex:endIndex]
+        if selectedText == "":
+            raise serializers.ValidationError({
+                'highlight': 'Not a valid highlight'
+            })
+
+        highlight = HighlightedText.objects.create(**validated_data)
+        return highlight
 
 
 class ReportArticleSerializer(serializers.ModelSerializer):

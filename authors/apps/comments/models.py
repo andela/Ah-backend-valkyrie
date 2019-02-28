@@ -1,9 +1,12 @@
 from django.db import models
 from authors.apps.authentication.models import User
 from authors.apps.articles.models import Article
+from authors.apps.articles.helper import LikeHelper
 
 
 class Comment(models.Model):
+    like_helper = LikeHelper()
+
     body = models.TextField()
     author = models.ForeignKey(
         User, related_name='comments', on_delete=models.CASCADE)
@@ -17,6 +20,22 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ('createdAt',)
+
+    @property
+    def comment_likes(self):
+        return self.like_helper.get_comment_likes_or_dislike(
+            model=CommentReaction,
+            comment_id=self.pk,
+            like=True
+        )
+
+    @property
+    def comment_dislikes(self):
+        return self.like_helper.get_comment_likes_or_dislike(
+            model=CommentReaction,
+            comment_id=self.pk,
+            like=False
+        )
 
 
 class CommentReaction(models.Model):

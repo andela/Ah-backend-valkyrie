@@ -22,7 +22,9 @@ class CommentSerializer(serializers.ModelSerializer):
             'updatedAt',
             'createdAt',
             'author',
-            'comment_history'
+            'comment_history',
+            'comment_likes',
+            'comment_dislikes',
         ]
         read_only_fields = ["author", "article"]
 
