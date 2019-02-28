@@ -24,6 +24,24 @@ class LikeHelper:
             'count': filtered_list.count()
         }
 
+    def get_comment_likes_or_dislike(self, **kwargs):
+        """
+        Counts the like and dislikes for an article
+        Args:
+            model(LikeArticle): LikeArticle model
+            like(bool): True for like, False for dislike
+            article_id(int): Article pk
+        Returns:
+            dict: With like count and a list of users who liked
+        """
+        likes = kwargs.get('model').objects.all().filter(
+            like=kwargs.get('like')
+        )
+        filtered_list = likes.filter(comment_id=kwargs.get('comment_id'))
+        return {
+            'count': filtered_list.count()
+        }
+
     def _get_usernames(self, filtered_list):
         """
         Retrieves a list of users who liked or disliked a
