@@ -351,8 +351,6 @@ class BookmarkArticleView(generics.ListCreateAPIView):
     )
 
     def get_queryset(self):
-        slug = self.kwargs.get('slug')
-        article = get_object_or_404(Article, slug=slug)
         return self.queryset.filter(user=self.request.user)
 
     def perform_create(self, serializer):
