@@ -110,10 +110,11 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class LikeArticleSerializer(serializers.ModelSerializer):
+    article_data = ArticleSerializer(required=False)
 
     class Meta:
         model = LikeArticle
-        fields = ['article', 'user', 'like', 'modified_at']
+        fields = ['article', 'user', 'like', 'modified_at', 'article_data']
 
     def create(self, validated_data):
         try:

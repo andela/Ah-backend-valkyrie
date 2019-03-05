@@ -145,6 +145,7 @@ class TestLikeArticle(BaseTestMethods):
             like=False,
             article_id=article.id
         )
+        print(likes)
         self.assertEqual(likes.get('count'), 1)
 
     def test_like_article_with_invalid_slug(self):
