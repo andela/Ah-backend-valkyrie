@@ -20,11 +20,15 @@ def serialize_queryset(queryset):
     serialized_queryset = []
     for qs in queryset:
         data = {
+            'id': qs.id,
+            'description': qs.description,
+            'verb': qs.verb,
             'unread': qs.unread,
             'emailed': qs.emailed,
             'recipient': qs.recipient.username,
             'actor': qs.actor.username,
-            'timestamp': qs.timestamp
+            'timestamp': qs.timestamp,
+            'data': qs.data,
         }
         serialized_queryset.append(data)
     return serialized_queryset
