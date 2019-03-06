@@ -77,6 +77,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             'average_rating',
             'createdAt',
             'updatedAt',
+            'image_url',
             'author',
             'likes',
             'dislikes',
